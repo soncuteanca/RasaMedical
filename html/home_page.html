@@ -1,10 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8"/>
+    <title>Medical Assistant</title>
+    <style>
+        body {
+            background-color: #E8F5E9; /* light green background */
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #2b2b2b;
+            margin: 0;
+        }
+
+        header {
+            background-color: #4CAF50; /* darker green header */
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            position: relative; /* Ensure header stays above content */
+            z-index: 2; /* Put header above nav and main content */
+        }
+
+        .title {
+            font-size: 28px;
+            margin: 0;
+            padding: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .button {
+            background-color: #2b8a28; /* button color */
+            color: #E2F3DE;
+            border: none;
+            border-radius: 10px;
+            font-size: 20px;
+            padding: 15px 25px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #7ed17b; /* on hover effect */
+        }
+
+        nav {
+            width: 250px; /* width of the side nav */
+            height: 100%;
+            position: fixed;
+            top: 60px; /* Adjust to be below the header */
+            left: 0;
+            background-color: #C8E6C9; /* nav color */
+            padding: 20px 0;
+            overflow: auto;
+        }
+
+        .menu-item {
+            display: block;
+            text-decoration: none;
+            color: #2b2b2b;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px;
+            margin: 10px 20px;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .menu-item:hover {
+            color: #4CAF50;
+        }
+
+        main {
+            margin-left: 250px; /* same as the width of the nav */
+            padding: 20px;
+            margin-top: 60px; /* Adjust to be below the header */
+        }
+
+        footer {
+            background-color: #4CAF50;
+            color: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>potato</h1>
+<header>
+    <h1 class="title">Medical Assistant</h1>
+    <button class="button">Chat Now!</button>
+</header>
+
+<nav>
+    <a class="menu-item" href="#">Home</a>
+    <a class="menu-item" href="#">About Us</a>
+    <a class="menu-item" href="#">Our Services</a>
+    <a class="menu-item" href="#">Patient Testimonials</a>
+</nav>
+
+<main>
+    <h2>Welcome to Medical Assistant</h2>
+    <p>Your health is our utmost priority. We strive to provide the best medical services tailored to your needs.</p>
+    <h3>Our Services</h3>
+    <p>We offer a range of medical services from general checkups to specialized treatments.</p>
+    <h3>Patient Testimonials</h3>
+    <p>Read about the experiences of our valued patients and their journey to health and well-being with us.</p>
+</main>
+
+<footer>
+    <p>&copy; 2023 Medical Assistant. All rights reserved.</p>
+</footer>
+
 </body>
 </html>
