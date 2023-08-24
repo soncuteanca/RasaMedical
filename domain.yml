@@ -9,6 +9,7 @@ intents:
   - mood_unhappy
   - bot_challenge
   - what_are_you
+  - get_started
 
 responses:
   utter_greet:

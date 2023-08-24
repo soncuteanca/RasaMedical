@@ -11,3 +11,8 @@ rules:
   steps:
   - intent: bot_challenge
   - action: utter_iamabot
+
+- rule: Changes the initial message of the Bot
+  steps:
+  - intent: get_started
+  - action: utter_greet
