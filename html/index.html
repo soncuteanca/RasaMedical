@@ -1,110 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8"/>
-    <title>Medical Assistant Chat</title>
+    <meta charset="UTF-8" />
+    <title>Chat with Medical Assistant</title>
     <style>
         body {
-            background-color: #A8E6CF; /* Light green */
+            background-color: #E8F5E9;
             font-family: Arial, sans-serif;
             font-size: 16px;
             color: #2b2b2b;
             margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
         }
-        /* Chat UI */
-        #chat-box {
-            width: 60%;
-            max-height: 400px;
-            overflow-y: auto;
+
+        .chat-container {
+            max-width: 800px;
+            margin: 50px auto;
+            border: 1px solid #4CAF50;
             padding: 20px;
-            border: 1px solid #ccc;
-            margin: 20px 0;
+            position: relative;
+            background-color: #fff;
             border-radius: 10px;
-            background-color: #E0FFF7; /* Fainter green */
         }
-        .chat-message {
-            margin-bottom: 10px;
+
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #4CAF50;
+            padding: 20px;
+            border-radius: 10px;
         }
-        .bot {
-            color: #2A363B; /* Dark gray-blue for the bot */
+
+        .input-box {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
         }
-        .user {
-            color: #7B8D8E; /* Gray for the user */
-        }
-        input[type="text"] {
-            padding: 10px;
+
+        #userInput {
+            flex: 1;
+            padding: 10px 15px;
+            margin-right: 10px;
+            border: 1px solid #4CAF50;
             border-radius: 5px;
-            border: 1px solid #ccc;
-            width: 55%;
         }
+
         button {
             padding: 10px 20px;
-            background-color: #00B159; /* Dark green */
-            color: white;
             border: none;
+            background-color: #4CAF50;
+            color: #fff;
             border-radius: 5px;
-            margin-left: 10px;
             cursor: pointer;
-            transition: background-color 0.3s;
         }
-        button:hover {
-            background-color: #008C45; /* Darker green on hover */
+
+        .chat-message {
+            margin-bottom: 15px;
         }
-        /* Subtle cue indicating a medical assistant chat */
-        h2 {
-            color: #2A363B; /* Dark gray-blue */
-            background-color: #E0FFF7; /* Fainter green */
-            padding: 5px 10px;
-            border-radius: 10px;
+
+        .bot {
+            color: #4CAF50;
+            font-weight: bold;
         }
+
+        .user {
+            color: #333;
+            font-weight: bold;
+        }
+
     </style>
 </head>
+
 <body>
-<h2>Medical Assistant Chat</h2>
 
-<!-- Chat Interface -->
-<div id="chat-box"></div>
-<input type="text" id="user-message" placeholder="Type your message...">
-<button id="send-button">Send</button>
+    <div class="chat-container">
+        <h2>Chat with Medical Assistant</h2>
+        <div class="chat-box" id="webchat">
+            <!-- Messages will be rendered here -->
+        </div>
+        <div class="input-box">
+            <input type="text" id="userInput" placeholder="Type your message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
 
-<script src="https://cdn.socket.io/4.2.0/socket.io.js"></script>
-<script>
-    const initialPayload = "/get_started";
-    const socketUrl = "http://localhost:5005";
-    const socket = io.connect(socketUrl);
+    <script src="https://cdn.socket.io/4.2.0/socket.io.js"></script>
 
-    const chatBox = document.getElementById('chat-box');
+    <script>
+        const socketUrl = "http://localhost:5005";
+        const socket = io.connect(socketUrl, {path: "/socket.io/"});
+        const chatBox = document.getElementById('webchat');
 
-    function sendMessage() {
-        const userMessage = document.getElementById('user-message').value;
-        chatBox.innerHTML += `<div class="chat-message user">You: ${userMessage}</div>`;
-        socket.emit('user_uttered', { message: userMessage });
-        document.getElementById('user-message').value = ''; // Clear the input field
-    }
-
-    socket.on('connect', () => {
-        console.log('Connected to Rasa server');
-        socket.emit('user_uttered', { message: initialPayload });
-    });
-
-    socket.on('bot_uttered', (data) => {
-        const message = data.text;
-        chatBox.innerHTML += `<div class="chat-message bot">Assistant: ${message}</div>`;
-    });
-
-    document.getElementById('send-button').addEventListener('click', sendMessage);
-    document.getElementById('user-message').addEventListener('keypress', function(event) {
-        if (event.keyCode === 13) { // Check for 'Enter' key
-            sendMessage();
-            event.preventDefault(); // Prevent default behaviour of 'Enter' key
+        function sendMessage() {
+            const inputField = document.getElementById('userInput');
+            const message = inputField.value;
+            if(message.trim() !== "") {
+                chatBox.innerHTML += `<div class="chat-message user">You: ${message}</div>`;
+                socket.emit('user_uttered', { message: message });
+                inputField.value = '';
+            }
         }
-    });
-</script>
+
+        socket.on('connect', () => {
+            console.log('Connected to Rasa server');
+            socket.emit('user_uttered', { message: "/get_started" });
+        });
+
+        socket.on('bot_uttered', (data) => {
+            const message = data.text;
+            chatBox.innerHTML += `<div class="chat-message bot">Assistant: ${message}</div>`;
+        });
+
+        document.getElementById('userInput').addEventListener('keypress', function(event) {
+            if (event.keyCode === 13) {
+                sendMessage();
+                event.preventDefault();
+            }
+        });
+    </script>
 
 </body>
+
 </html>
