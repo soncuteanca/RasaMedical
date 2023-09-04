@@ -1,19 +1,20 @@
 version: "3.1"
 
 intents:
-  - greet
-  - goodbye
-  - affirm
-  - deny
-  - mood_great
-  - mood_unhappy
-  - bot_challenge
-  - what_are_you
-  - get_started
+  - greet_intent
+  - goodbye_intent
+  - affirm_intent
+  - deny_intent
+  - mood_great_intent
+  - mood_unhappy_intent
+  - bot_challenge_intent
+  - what_are_you_intent
+  - get_started_intent
+  - trigger_action_intent
 
 responses:
   utter_greet:
-      - text: "Hello! How can I help you?"
+  - text: "Hello! How can I help you?"
 
   utter_cheer_up:
   - text: "Here is something to cheer you up:"
@@ -32,7 +33,7 @@ responses:
   - text: "I am a bot, powered by Rasa."
 
   utter_what_are_you:
-    - text: "I am a medical assistant bot!"
+  - text: "I am a medical assistant bot!"
 
 
 entities:
@@ -40,6 +41,7 @@ entities:
 
 actions:
   - utter_what_are_you
+  - action_greet_user
 
 session_config:
   session_expiration_time: 60

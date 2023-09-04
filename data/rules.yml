@@ -4,15 +4,20 @@ rules:
 
 - rule: Say goodbye anytime the user says goodbye
   steps:
-  - intent: goodbye
+  - intent: goodbye_intent
   - action: utter_goodbye
 
 - rule: Say 'I am a bot' anytime the user challenges
   steps:
-  - intent: bot_challenge
+  - intent: bot_challenge_intent
   - action: utter_iamabot
 
 - rule: Changes the initial message of the Bot
   steps:
-  - intent: get_started
+  - intent: get_started_intent
   - action: utter_greet
+
+- rule: Trigger first action
+  steps:
+  - intent: trigger_action_intent
+  - action: action_greet_user
