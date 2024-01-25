@@ -13,4 +13,8 @@ class ActionGreetUser(Action):
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         dispatcher.utter_message(text="Hello, user!")
 
+        # Image message
+        image_url = "https://i.ytimg.com/vi/96xC5JIkIpQ/maxresdefault.jpg"
+        dispatcher.utter_message(image=image_url)
+
         return []

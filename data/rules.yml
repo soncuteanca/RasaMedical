@@ -15,9 +15,4 @@ rules:
 - rule: Changes the initial message of the Bot
   steps:
   - intent: get_started_intent
-  - action: utter_greet
-
-- rule: Trigger first action
-  steps:
-  - intent: trigger_action_intent
   - action: action_greet_user

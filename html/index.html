@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title>Chat with Medical Assistant</title>
     <style>
         body {
@@ -73,51 +73,58 @@
 
 <body>
 
-    <div class="chat-container">
-        <h2>Chat with Medical Assistant</h2>
-        <div class="chat-box" id="webchat">
-            <!-- Messages will be rendered here -->
-        </div>
-        <div class="input-box">
-            <input type="text" id="userInput" placeholder="Type your message..." />
-            <button onclick="sendMessage()">Send</button>
-        </div>
+<div class="chat-container">
+    <h2>Chat with Medical Assistant</h2>
+    <div class="chat-box" id="webchat">
+        <!-- Messages will be rendered here -->
     </div>
+    <div class="input-box">
+        <input type="text" id="userInput" placeholder="Type your message..."/>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
 
-    <script src="https://cdn.socket.io/4.2.0/socket.io.js"></script>
+<script src="https://cdn.socket.io/4.2.0/socket.io.js"></script>
 
-    <script>
-        const socketUrl = "http://localhost:5005";
-        const socket = io.connect(socketUrl, {path: "/socket.io/"});
-        const chatBox = document.getElementById('webchat');
+<script>
+    const socketUrl = "http://localhost:5005";
+    const socket = io.connect(socketUrl, {path: "/socket.io/"});
+    const chatBox = document.getElementById('webchat');
 
-        function sendMessage() {
-            const inputField = document.getElementById('userInput');
-            const message = inputField.value;
-            if(message.trim() !== "") {
-                chatBox.innerHTML += `<div class="chat-message user">You: ${message}</div>`;
-                socket.emit('user_uttered', { message: message });
-                inputField.value = '';
-            }
+    function sendMessage() {
+        const inputField = document.getElementById('userInput');
+        const message = inputField.value;
+        if (message.trim() !== "") {
+            chatBox.innerHTML += `<div class="chat-message user">You: ${message}</div>`;
+            socket.emit('user_uttered', {message: message});
+            inputField.value = '';
         }
+    }
 
-        socket.on('connect', () => {
-            console.log('Connected to Rasa server');
-            socket.emit('user_uttered', { message: "/get_started" });
-        });
+    socket.on('connect', () => {
+        console.log('Connected to Rasa server');
+        socket.emit('user_uttered', {message: "/get_started_intent"});
+    });
 
-        socket.on('bot_uttered', (data) => {
-            const message = data.text;
-            chatBox.innerHTML += `<div class="chat-message bot">Assistant: ${message}</div>`;
-        });
+    socket.on('bot_uttered', (data) => {
+        console.log("Received data from bot:", data); // This will show the entire data object
 
-        document.getElementById('userInput').addEventListener('keypress', function(event) {
-            if (event.keyCode === 13) {
-                sendMessage();
-                event.preventDefault();
-            }
-        });
-    </script>
+        if (data.text) {
+            chatBox.innerHTML += `<div class="chat-message bot">Assistant: ${data.text}</div>`;
+        } else if (data.attachment && data.attachment.type === "image") {
+            let imageUrl = data.attachment.payload.src;
+            chatBox.innerHTML += `<div class="chat-message bot"><img src="${imageUrl}" alt="Bot Image" style="max-width: 100%; height: auto;"></div>`;
+        }
+    });
+
+
+    document.getElementById('userInput').addEventListener('keypress', function (event) {
+        if (event.keyCode === 13) {
+            sendMessage();
+            event.preventDefault();
+        }
+    });
+</script>
 
 </body>
 
