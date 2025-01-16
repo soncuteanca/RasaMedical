@@ -2,6 +2,11 @@ version: "3.1"
 
 rules:
 
+- rule: Greet the user when they say hello
+  steps:
+  - intent: greet_intent
+  - action: utter_greet
+
 - rule: Say goodbye anytime the user says goodbye
   steps:
   - intent: goodbye_intent
