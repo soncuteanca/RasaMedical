@@ -42,7 +42,7 @@ To run this project, you need:
 
 ```bash
 # Clone the repository
-git clone https://github.com/annebarb/Rasa1
+git clone https://github.com/soncuteanca/RasaMedical
 
 # Navigate to project directory
 cd Rasa1
