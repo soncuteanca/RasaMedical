@@ -29,6 +29,7 @@
             border: 1px solid #4CAF50;
             padding: 20px;
             border-radius: 10px;
+            scroll-behavior: smooth;
         }
 
         .input-box {
@@ -91,6 +92,10 @@
     const socket = io.connect(socketUrl, {path: "/socket.io/"});
     const chatBox = document.getElementById('webchat');
 
+    function scrollToBottom() {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
     function sendMessage() {
         const inputField = document.getElementById('userInput');
         const message = inputField.value;
@@ -98,6 +103,7 @@
             chatBox.innerHTML += `<div class="chat-message user">You: ${message}</div>`;
             socket.emit('user_uttered', {message: message});
             inputField.value = '';
+            scrollToBottom(); // Ensure scroll moves down after sending message
         }
     }
 
@@ -115,8 +121,8 @@
             let imageUrl = data.attachment.payload.src;
             chatBox.innerHTML += `<div class="chat-message bot"><img src="${imageUrl}" alt="Bot Image" style="max-width: 100%; height: auto;"></div>`;
         }
+        scrollToBottom(); // Ensure scroll moves down when bot sends a message
     });
-
 
     document.getElementById('userInput').addEventListener('keypress', function (event) {
         if (event.keyCode === 13) {
