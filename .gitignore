@@ -89,3 +89,7 @@ rasa/keys
 # Local Netlify folder
 .netlify
 test.py
+cache/
+*.json
+*.safetensors
+*.txt
