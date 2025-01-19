@@ -5,6 +5,8 @@ intents:
   - goodbye_intent
   - bot_challenge_intent
   - get_started_intent
+  - out_of_scope_intent
+  - thanks_intent
 
 responses:
   utter_greet:
@@ -15,6 +17,13 @@ responses:
 
   utter_iamabot:
     - text: "I am a medical assistant bot, powered by Rasa."
+
+  utter_out_of_scope:
+    - text: "I'm sorry, I didn't understand that. I'm here to help with medical questions and health advice."
+
+  utter_thanks:
+      - text: "You're welcome! Let me know if there's anything else I can help with."
+
 
 actions:
   - action_greet_user

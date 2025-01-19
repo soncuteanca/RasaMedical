@@ -93,3 +93,4 @@ cache/
 *.json
 *.safetensors
 *.txt
+main.py

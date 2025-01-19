@@ -21,3 +21,13 @@ rules:
   steps:
     - intent: get_started_intent
     - action: action_greet_user
+
+- rule: Handle out-of-scope messages
+  steps:
+    - intent: out_of_scope_intent
+    - action: utter_out_of_scope
+
+- rule: Respond to thanks
+  steps:
+    - intent: thanks_intent
+    - action: utter_thanks

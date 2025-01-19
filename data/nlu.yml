@@ -11,20 +11,28 @@ nlu:
   examples: |
     - bye
     - goodbye
-    - have a nice day
     - see you later
 
 - intent: bot_challenge_intent
   examples: |
     - What are you?
-    - Can you tell me what you are?
     - What is your purpose?
-    - are you a bot?
-    - are you human?
-    - am I talking to a bot?
+    - Am I talking to a bot?
 
 - intent: get_started_intent
   examples: |
     - Let's get started
     - Start the conversation
     - Begin the chat
+
+- intent: out_of_scope_intent
+  examples: |
+    - What's the weather like today?
+    - Tell me a joke
+    - You are annoying
+
+- intent: thanks_intent
+  examples: |
+    - Thanks
+    - Thanks a lot
+    - Cheers
