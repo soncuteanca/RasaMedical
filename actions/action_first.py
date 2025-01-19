@@ -14,7 +14,7 @@ class ActionGreetUser(Action):
         dispatcher.utter_message(text="Hello, user!")
 
         # Image message
-        image_url = "https://i.ytimg.com/vi/96xC5JIkIpQ/maxresdefault.jpg"
+        image_url = "https://cdn.pixabay.com/photo/2021/11/20/03/16/doctor-6810750_640.png"
         dispatcher.utter_message(image=image_url)
 
         return []
