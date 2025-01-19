@@ -36,3 +36,21 @@ nlu:
     - Thanks
     - Thanks a lot
     - Cheers
+
+- intent: ask_location_intent
+  examples: |
+    - What is your address?
+    - Can you tell me your location?
+    - How can I find the clinic?
+
+- intent: ask_working_hours_intent
+  examples: |
+    - What are your working hours?
+    - When are you open?
+    - Are you open on weekends?
+
+- intent: ask_services_intent
+  examples: |
+    - What services do you provide?
+    - What kind of treatments do you offer?
+    - Can you tell me about your services?
