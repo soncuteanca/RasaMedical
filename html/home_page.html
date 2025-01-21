@@ -32,6 +32,11 @@
             letter-spacing: 2px;
         }
 
+        .button-container {
+            display: flex;
+            align-items: center;
+        }
+
         .button {
             background-color: #2b8a28; /* button color */
             color: #E2F3DE;
@@ -41,7 +46,14 @@
             padding: 10px 20px;
             cursor: pointer;
             text-decoration: none;
-            margin-left: 10px;
+        }
+
+        .button:first-child {
+            margin-right: 15px; /* Space between Chat Now! and Create New User */
+        }
+
+        .button:last-child {
+            margin-right: 20px; /* Add explicit space on the right */
         }
 
         .button:hover {
@@ -97,7 +109,7 @@
 <body>
 <header>
     <h1 class="title">Medical Assistant</h1>
-    <div>
+    <div class="button-container">
         <a href="index.html" class="button">Chat Now!</a>
         <a href="create_user.html" class="button">Create New User</a>
     </div>
@@ -120,7 +132,7 @@
 </main>
 
 <footer>
-    <p>&copy; 2023 Medical Assistant. All rights reserved.</p>
+    <p>&copy; 2025 Medical Assistant. All rights reserved.</p>
 </footer>
 </body>
 </html>
