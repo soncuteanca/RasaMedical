@@ -18,15 +18,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            position: relative; /* Ensure header stays above content */
-            z-index: 2; /* Put header above nav and main content */
+            padding: 10px 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 2;
         }
 
         .title {
             font-size: 28px;
             margin: 0;
-            padding: 0;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
@@ -36,25 +37,26 @@
             color: #E2F3DE;
             border: none;
             border-radius: 10px;
-            font-size: 20px;
-            padding: 15px 25px;
+            font-size: 16px;
+            padding: 10px 20px;
             cursor: pointer;
             text-decoration: none;
+            margin-left: 10px;
         }
 
         .button:hover {
-            background-color: #7ed17b; /* on hover effect */
+            background-color: #7ed17b; /* hover effect */
         }
 
         nav {
             width: 250px; /* width of the side nav */
-            height: 100%;
+            height: 100vh;
             position: fixed;
-            top: 60px; /* Adjust to be below the header */
+            top: 60px; /* below header */
             left: 0;
             background-color: #C8E6C9; /* nav color */
             padding: 20px 0;
-            overflow: auto;
+            overflow-y: auto;
         }
 
         .menu-item {
@@ -73,16 +75,16 @@
         }
 
         main {
-            margin-left: 250px; /* same as the width of the nav */
+            margin-left: 250px; /* space for the side nav */
+            margin-top: 80px; /* space for the header */
             padding: 20px;
-            margin-top: 60px; /* Adjust to be below the header */
         }
 
         footer {
             background-color: #4CAF50;
             color: #fff;
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
             align-items: center;
             padding: 20px;
             position: fixed;
@@ -95,7 +97,10 @@
 <body>
 <header>
     <h1 class="title">Medical Assistant</h1>
-    <a href="index.html" class="button">Chat Now!</a>
+    <div>
+        <a href="index.html" class="button">Chat Now!</a>
+        <a href="create_user.html" class="button">Create New User</a>
+    </div>
 </header>
 
 <nav>
@@ -117,6 +122,5 @@
 <footer>
     <p>&copy; 2023 Medical Assistant. All rights reserved.</p>
 </footer>
-
 </body>
 </html>
