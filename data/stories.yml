@@ -15,3 +15,8 @@ stories:
     steps:
       - intent: ask_services_intent
       - action: utter_services
+
+  - story: Fetch users from database
+    steps:
+      - intent: fetch_users
+      - action: action_fetch_users

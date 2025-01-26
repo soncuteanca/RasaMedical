@@ -10,6 +10,7 @@ intents:
   - ask_working_hours_intent
   - ask_location_intent
   - ask_services_intent
+  - fetch_users
 
 
 responses:
@@ -39,6 +40,7 @@ responses:
 
 actions:
   - action_greet_user
+  - action_fetch_users
 
 
 session_config:
