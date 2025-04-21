@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Database Content</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        h2 {
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .refresh-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .refresh-btn:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Medical Database Content</h1>
+        <button class="refresh-btn" onclick="refreshData()">Refresh Data</button>
+        <div id="errorMessage" class="error"></div>
+
+        <div class="section">
+            <h2>Patients</h2>
+            <table id="patientsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Age</th>
+                        <th>Medical History</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody id="patientsBody">
+                    <!-- Data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Appointments</h2>
+            <table id="appointmentsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient ID</th>
+                        <th>Date</th>
+                        <th>Doctor</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="appointmentsBody">
+                    <!-- Data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Medical Records</h2>
+            <table id="recordsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient ID</th>
+                        <th>Diagnosis</th>
+                        <th>Prescription</th>
+                    </tr>
+                </thead>
+                <tbody id="recordsBody">
+                    <!-- Data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function refreshData() {
+            try {
+                // Fetch patients
+                const patientsResponse = await fetch('http://127.0.0.1:5000/api/patients');
+                const patients = await patientsResponse.json();
+                const tbody = document.getElementById('patientsBody');
+                tbody.innerHTML = '';
+                patients.forEach(patient => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${patient.id}</td>
+                            <td>${patient.name}</td>
+                            <td>${patient.surname}</td>
+                            <td>${patient.age}</td>
+                            <td>${patient.medical_history || ''}</td>
+                            <td>${patient.created_at}</td>
+                        </tr>
+                    `;
+                });
+
+                // Fetch appointments
+                const appointmentsResponse = await fetch('http://127.0.0.1:5000/api/appointments');
+                const appointments = await appointmentsResponse.json();
+                const appointmentsTbody = document.getElementById('appointmentsBody');
+                appointmentsTbody.innerHTML = '';
+                appointments.forEach(appointment => {
+                    appointmentsTbody.innerHTML += `
+                        <tr>
+                            <td>${appointment.id}</td>
+                            <td>${appointment.user_id}</td>
+                            <td>${appointment.appointment_date}</td>
+                            <td>${appointment.doctor_name}</td>
+                            <td>${appointment.status}</td>
+                        </tr>
+                    `;
+                });
+
+                // Fetch medical records
+                const recordsResponse = await fetch('http://127.0.0.1:5000/api/records');
+                const records = await recordsResponse.json();
+                const recordsTbody = document.getElementById('recordsBody');
+                recordsTbody.innerHTML = '';
+                records.forEach(record => {
+                    recordsTbody.innerHTML += `
+                        <tr>
+                            <td>${record.id}</td>
+                            <td>${record.user_id}</td>
+                            <td>${record.diagnosis || ''}</td>
+                            <td>${record.prescription || ''}</td>
+                        </tr>
+                    `;
+                });
+
+                // Clear any previous error messages
+                document.getElementById('errorMessage').textContent = '';
+
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', refreshData);
+    </script>
+</body>
+</html> 
