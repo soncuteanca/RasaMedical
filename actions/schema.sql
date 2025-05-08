@@ -1,43 +1,34 @@
--- Create the database if it doesn't exist
-CREATE DATABASE IF NOT EXISTS medical_bot;
-
-USE medical_bot;
+-- Drop dependent tables first
+DROP TABLE IF EXISTS medical_records;
+DROP TABLE IF EXISTS appointments;
+DROP TABLE IF EXISTS doctor;
+DROP TABLE IF EXISTS users;
 
 -- Create users table
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    surname VARCHAR(100) NOT NULL,
-    age INT,
-    medical_history TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    email VARCHAR(100) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create doctor table
+CREATE TABLE doctor (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    specialty VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create appointments table
-CREATE TABLE IF NOT EXISTS appointments (
+CREATE TABLE appointments (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
+    user_id INT NOT NULL,
+    doctor_id INT NOT NULL,
     appointment_date DATETIME NOT NULL,
-    doctor_name VARCHAR(100) NOT NULL,
-    reason TEXT,
+    reason VARCHAR(255),
     status ENUM('scheduled', 'completed', 'cancelled') DEFAULT 'scheduled',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (doctor_id) REFERENCES doctor(id)
 );
-
--- Create medical_records table
-CREATE TABLE IF NOT EXISTS medical_records (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    diagnosis TEXT,
-    prescription TEXT,
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
--- Create indexes
-CREATE INDEX idx_user_name ON users(name);
-CREATE INDEX idx_user_surname ON users(surname);
-CREATE INDEX idx_appointment_date ON appointments(appointment_date); 
