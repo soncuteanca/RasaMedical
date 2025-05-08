@@ -5,45 +5,39 @@
     <title>Create New User</title>
     <style>
         body {
-            background-color: #E8F5E9; /* light green background */
+            background-color: #E8F5E9;
             font-family: Arial, sans-serif;
             font-size: 16px;
             color: #2b2b2b;
             margin: 0;
         }
-
         .container {
-            max-width: 800px; /* Match size with Chat container */
+            max-width: 800px;
             margin: 50px auto;
             padding: 20px;
             background-color: #fff;
             border: 1px solid #4CAF50;
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
-
         h2 {
             text-align: center;
             color: #4CAF50;
         }
-
         form {
             display: flex;
             flex-direction: column;
         }
-
         label {
             margin: 15px 0 5px;
             font-size: 18px;
         }
-
-        input {
+        input, select {
             padding: 12px;
             border: 1px solid #4CAF50;
             border-radius: 5px;
             font-size: 16px;
         }
-
         button {
             margin-top: 20px;
             padding: 12px;
@@ -54,7 +48,6 @@
             font-size: 18px;
             cursor: pointer;
         }
-
         button:hover {
             background-color: #7ed17b;
         }
@@ -64,11 +57,28 @@
 <div class="container">
     <h2>Create New User</h2>
     <form id="createUserForm">
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" placeholder="Enter your name" required />
+        <label for="first_name">First Name</label>
+        <input type="text" id="first_name" name="first_name" placeholder="Enter your first name" required />
+
+        <label for="last_name">Last Name</label>
+        <input type="text" id="last_name" name="last_name" placeholder="Enter your last name" required />
 
         <label for="email">Email</label>
         <input type="email" id="email" name="email" placeholder="Enter your email" required />
+
+        <label for="sex">Sex</label>
+        <select id="sex" name="sex" required>
+            <option value="">Select sex</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+        </select>
+
+        <label for="age">Age</label>
+        <input type="number" id="age" name="age" placeholder="Enter your age" min="0" required />
+
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required />
 
         <button type="submit">Create User</button>
     </form>
