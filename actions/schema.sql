@@ -17,7 +17,7 @@ CREATE TABLE users (
 );
 
 -- Create doctor table
-CREATE TABLE doctor (
+CREATE TABLE doctors (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     specialty VARCHAR(100),
