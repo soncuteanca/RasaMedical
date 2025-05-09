@@ -83,5 +83,41 @@
         <button type="submit">Create User</button>
     </form>
 </div>
+
+<script>
+document.getElementById('createUserForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        first_name: document.getElementById('first_name').value,
+        last_name: document.getElementById('last_name').value,
+        email: document.getElementById('email').value,
+        sex: document.getElementById('sex').value,
+        age: parseInt(document.getElementById('age').value),
+        phone: document.getElementById('phone').value
+    };
+
+    try {
+        const response = await fetch('http://localhost:5000/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+        
+        if (response.ok) {
+            alert('User created successfully!');
+            window.location.href = '/'; // Redirect to home page
+        } else {
+            alert('Error creating user: ' + result.error);
+        }
+    } catch (error) {
+        alert('Error creating user: ' + error.message);
+    }
+});
+</script>
 </body>
 </html>
