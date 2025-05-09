@@ -1,7 +1,7 @@
 -- Drop dependent tables first
 DROP TABLE IF EXISTS medical_records;
 DROP TABLE IF EXISTS appointments;
-DROP TABLE IF EXISTS doctor;
+DROP TABLE IF EXISTS doctors;
 DROP TABLE IF EXISTS users;
 
 -- Create users table
@@ -34,5 +34,5 @@ CREATE TABLE appointments (
     status ENUM('scheduled', 'completed', 'cancelled') DEFAULT 'scheduled',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (doctor_id) REFERENCES doctor(id)
+    FOREIGN KEY (doctor_id) REFERENCES doctors(id)
 );
