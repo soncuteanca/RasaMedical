@@ -95,13 +95,14 @@ def create_user():
         try:
             data = request.json
             query = """
-                INSERT INTO users (first_name, last_name, email, sex, age, phone) 
-                VALUES (%s, %s, %s, %s, %s, %s)
+                INSERT INTO users (first_name, last_name, email, password, sex, age, phone) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
             params = (
                 data['first_name'],
                 data['last_name'],
                 data['email'],
+                data['password'],
                 data['sex'],
                 data['age'],
                 data['phone']
