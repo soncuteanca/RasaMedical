@@ -11,6 +11,8 @@ This project is built with **Rasa Open Source** to:
 - Handle dialogue management with custom rules and stories
 - Provide a user-friendly web-based chat interface for interaction
 - Respond with rich content like text and images
+- Manage user data through a Flask backend
+- Support user creation and management
 
 The chatbot uses Python-based custom actions and is integrated with a browser-based chat widget.
 
@@ -23,6 +25,8 @@ To run this project, you need:
 - **Rasa Open Source**: Installed via pip
 - **Node.js and npm**: (for webchat integration)
 - **Browser**: Any modern browser to open the web chat interface
+- **PyCharm**: For development and running the application
+- **Flask**: For the backend API
 
 ---
 
@@ -33,6 +37,8 @@ To run this project, you need:
 - **Rich Responses**: Displays text, buttons, and images
 - **Interactive Web Interface**: Engages users with real-time communication
 - **Scalable Design**: Easily extendable with new intents and actions
+- **User Management**: Create and manage user accounts
+- **Database Integration**: Store and retrieve user data
 
 ---
 
@@ -45,7 +51,7 @@ To run this project, you need:
 git clone https://github.com/soncuteanca/RasaMedical
 
 # Navigate to project directory
-cd Rasa1
+cd RasaMedical
 
 # Create virtual environment
 python -m venv .venv
@@ -67,19 +73,41 @@ pip install -r requirements.txt
 rasa train
 ```
 
-### 3. Launch Services
+### 3. Running the Application
 
+You need to run three servers simultaneously:
+
+1. **Flask Server** (for user management API):
 ```bash
-# Start the action server
-rasa run actions
+python server.py
+```
+This runs on port 5000 and handles user creation and management.
 
-# In a new terminal, start the Rasa server
+2. **Rasa Server** (for chat functionality):
+```bash
 rasa run -m models --enable-api --cors "*" --debug
 ```
+This runs the Rasa model and enables the chat API.
 
-### 4. Access Web Interface
-- Open `html/index.html` in your preferred browser
-- Start interacting with the chatbot through the web interface
+3. **Rasa Action Server** (for custom actions):
+```bash
+rasa run actions
+```
+This runs the custom actions like fetching users.
+
+### 4. Access the Application
+
+1. Open the project in PyCharm
+2. Open `html/home_page.html` in PyCharm (it will open on port 63342)
+3. You can now:
+   - Use the chat functionality
+   - Create new users
+   - Access all features of the application
+
+The application uses multiple ports:
+- Port 63342: PyCharm's server for serving HTML pages
+- Port 5000: Flask server for user management API
+- Port 5005: Rasa server for chat functionality
 
 ---
 
@@ -142,9 +170,10 @@ rasa run -m models --enable-api --cors "*" --debug
   ```bash
   rasa data validate
   ```
-- Ensure both servers (bot and actions) are running for the web interface
-- Node.js must be installed before running npm commands
+- Ensure all three servers (Flask, Rasa, and actions) are running
+- The application requires both PyCharm's server and Flask server to be running
 - For development, use `--debug` flag with `rasa run` for detailed logs
 - Check the [Rasa documentation](https://rasa.com/docs/) for advanced configuration
+- Make sure your database is properly configured in `actions/db_config.py`
 
 ---
