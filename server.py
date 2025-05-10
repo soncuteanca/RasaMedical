@@ -112,6 +112,37 @@ def create_user():
             logger.error(f"Error creating user: {str(e)}")
             return jsonify({'error': str(e)}), 500
 
+@app.route('/api/login', methods=['POST'])
+def login():
+    if request.method == 'POST':
+        try:
+            data = request.json
+            query = """
+                SELECT id, first_name, last_name, email 
+                FROM users 
+                WHERE email = %s
+            """
+            params = (data['email'],)
+            result = db_manager.execute_query(query, params)
+            
+            if result:
+                # In a real application, you would verify the password here
+                # For now, we'll just return a success message
+                return jsonify({
+                    'message': 'Login successful',
+                    'token': 'dummy_token',  # In a real app, generate a proper JWT token
+                    'user': {
+                        'id': result[0]['id'],
+                        'name': f"{result[0]['first_name']} {result[0]['last_name']}",
+                        'email': result[0]['email']
+                    }
+                }), 200
+            else:
+                return jsonify({'error': 'Invalid email or password'}), 401
+        except Exception as e:
+            logger.error(f"Error during login: {str(e)}")
+            return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     # Test database connection on startup
     try:
