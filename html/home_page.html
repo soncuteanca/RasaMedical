@@ -153,7 +153,7 @@
     <h1 class="title">Medical Assistant</h1>
     <div class="button-container">
         <a href="index.html" class="button button-chat">Chat Now!</a>
-        <span id="userNameDisplay" class="button button-login" style="display:none;"></span>
+        <span id="userNameDisplay" class="button button-login" style="display:none; cursor:pointer;"></span>
         <a href="login.html" class="button button-login" id="loginBtn">Login</a>
         <a href="create_user.html" class="button button-create" id="createAccountBtn">Create Account</a>
         <button class="button button-logout" id="logoutBtn" style="display:none;">Logout</button>
@@ -197,6 +197,7 @@ window.addEventListener('DOMContentLoaded', function() {
         try {
             const userObj = JSON.parse(user);
             userNameDisplay.textContent = userObj.name ? userObj.name : 'User';
+            userNameDisplay.onclick = function() { window.location.href = 'user.html'; };
         } catch (e) {
             userNameDisplay.textContent = 'User';
         }
