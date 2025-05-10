@@ -84,6 +84,13 @@
     </form>
 </div>
 
+<div id="successModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+  <div style="background:#fff; padding:30px 40px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.2); text-align:center;">
+    <p id="modalMessage" style="font-size:18px; color:#333;"></p>
+    <button onclick="closeModal()" style="margin-top:20px; padding:10px 20px; font-size:16px; border:none; background:#4CAF50; color:#fff; border-radius:5px; cursor:pointer;">OK</button>
+  </div>
+</div>
+
 <script>
 document.getElementById('createUserForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -109,15 +116,24 @@ document.getElementById('createUserForm').addEventListener('submit', async funct
         const result = await response.json();
         
         if (response.ok) {
-            alert('User created successfully!');
-            window.location.href = '/'; // Redirect to home page
+            showModal('User account created successfully. You will now be redirected to the home page.');
         } else {
-            alert('Error creating user: ' + result.error);
+            showModal('Error creating user: ' + result.error);
         }
     } catch (error) {
-        alert('Error creating user: ' + error.message);
+        showModal('Error creating user: ' + error.message);
     }
 });
+
+function showModal(message) {
+  document.getElementById('modalMessage').innerText = message;
+  document.getElementById('successModal').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('successModal').style.display = 'none';
+  window.location.href = '/';
+}
 </script>
 </body>
 </html>
