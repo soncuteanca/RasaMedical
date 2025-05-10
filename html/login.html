@@ -111,6 +111,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         if (response.ok) {
             // Store the token or user info if needed
             localStorage.setItem('userToken', result.token);
+            localStorage.setItem('user', JSON.stringify(result.user));
             window.location.href = '/RasaMedical/html/home_page.html';
         } else {
             showModal('Login failed: ' + result.error);
