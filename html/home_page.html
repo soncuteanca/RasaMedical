@@ -78,6 +78,16 @@
             color: #fff;
         }
 
+        .button-logout {
+            background-color: #444;
+            color: #fff;
+            border: 2px solid #444;
+        }
+        .button-logout:hover {
+            background-color: #222;
+            border-color: #222;
+        }
+
         @media (max-width: 600px) {
             .title {
                 font-size: 16px;
@@ -144,7 +154,8 @@
     <div class="button-container">
         <a href="index.html" class="button button-chat">Chat Now!</a>
         <a href="login.html" class="button button-login">Login</a>
-        <a href="create_user.html" class="button button-create">Create Account</a>
+        <a href="create_user.html" class="button button-create" id="createAccountBtn">Create Account</a>
+        <button class="button button-logout" id="logoutBtn" style="display:none;">Logout</button>
     </div>
 </header>
 
@@ -167,5 +178,25 @@
 <footer>
     <p>&copy; 2025 Medical Assistant. All rights reserved.</p>
 </footer>
+
+<script>
+// Show Logout if logged in, else show Create Account
+window.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('userToken');
+    const createBtn = document.getElementById('createAccountBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (token) {
+        createBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
+    } else {
+        createBtn.style.display = 'inline-block';
+        logoutBtn.style.display = 'none';
+    }
+    logoutBtn && logoutBtn.addEventListener('click', function() {
+        localStorage.removeItem('userToken');
+        location.reload();
+    });
+});
+</script>
 </body>
 </html>
