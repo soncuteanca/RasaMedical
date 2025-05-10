@@ -119,19 +119,17 @@ def login():
         try:
             data = request.json
             query = """
-                SELECT id, first_name, last_name, email 
-                FROM users 
+                SELECT id, first_name, last_name, email, password
+                FROM users
                 WHERE email = %s
             """
             params = (data['email'],)
             result = db_manager.execute_query(query, params)
             
-            if result:
-                # In a real application, you would verify the password here
-                # For now, we'll just return a success message
+            if result and result[0]['password'] == data['password']:
                 return jsonify({
                     'message': 'Login successful',
-                    'token': 'dummy_token',  # In a real app, generate a proper JWT token
+                    'token': 'dummy_token',
                     'user': {
                         'id': result[0]['id'],
                         'name': f"{result[0]['first_name']} {result[0]['last_name']}",
