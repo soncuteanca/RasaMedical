@@ -12,11 +12,19 @@ CORS(app)  # Enable CORS for all routes
 
 @app.route('/')
 def index():
-    return send_from_directory('html', 'view_data.html')
+    return send_from_directory('html', 'home_page.html')
 
 @app.route('/add-data')
 def add_data():
     return send_from_directory('html', 'add_data.html')
+
+@app.route('/home_page.html')
+def home_page():
+    return send_from_directory('html', 'home_page.html')
+
+@app.route('/create_user.html')
+def create_user_page():
+    return send_from_directory('html', 'create_user.html')
 
 @app.route('/api/patients', methods=['GET', 'POST'])
 def handle_patients():
