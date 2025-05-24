@@ -69,13 +69,32 @@
             font-weight: bold;
         }
 
+        .header {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
     </style>
 </head>
 
 <body>
+<div class="header">
+    <h2>Chat with Medical Assistant</h2>
+    <a href="home_page.html" class="back-button">← Back to Home</a>
+</div>
 
 <div class="chat-container">
-    <h2>Chat with Medical Assistant</h2>
     <div class="chat-box" id="webchat">
         <!-- Messages will be rendered here -->
     </div>
@@ -101,27 +120,37 @@
         const message = inputField.value;
         if (message.trim() !== "") {
             chatBox.innerHTML += `<div class="chat-message user">You: ${message}</div>`;
-            socket.emit('user_uttered', {message: message});
+            const user = localStorage.getItem('user');
+            socket.emit('user_uttered', {
+                message: message,
+                metadata: {
+                    user: user
+                }
+            });
             inputField.value = '';
-            scrollToBottom(); // Ensure scroll moves down after sending message
+            scrollToBottom();
         }
     }
 
     socket.on('connect', () => {
         console.log('Connected to Rasa server');
-        socket.emit('user_uttered', {message: "/get_started_intent"});
+        const user = localStorage.getItem('user');
+        socket.emit('user_uttered', {
+            message: "/get_started_intent",
+            metadata: {
+                user: user
+            }
+        });
     });
 
     socket.on('bot_uttered', (data) => {
-        console.log("Received data from bot:", data); // This will show the entire data object
-
         if (data.text) {
             chatBox.innerHTML += `<div class="chat-message bot">Assistant: ${data.text}</div>`;
         } else if (data.attachment && data.attachment.type === "image") {
             let imageUrl = data.attachment.payload.src;
             chatBox.innerHTML += `<div class="chat-message bot"><img src="${imageUrl}" alt="Bot Image" style="max-width: 100%; height: auto;"></div>`;
         }
-        scrollToBottom(); // Ensure scroll moves down when bot sends a message
+        scrollToBottom();
     });
 
     document.getElementById('userInput').addEventListener('keypress', function (event) {

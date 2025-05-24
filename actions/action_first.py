@@ -1,7 +1,7 @@
 from typing import Dict, Any, Text, List
 from rasa_sdk import Tracker, Action
 from rasa_sdk.executor import CollectingDispatcher
-
+import json
 
 class ActionGreetUser(Action):
 
@@ -11,10 +11,44 @@ class ActionGreetUser(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        dispatcher.utter_message(text="Hello, user!")
-
-        # Image message
+        
+        try:
+            # Get the user data from the session metadata
+            session_metadata = tracker.get_slot("session_started_metadata")
+            
+            if not session_metadata or not isinstance(session_metadata, dict):
+                dispatcher.utter_message(text="Hello, user!")
+                return self._send_image(dispatcher)
+            
+            user_data_str = session_metadata.get('user')
+            if not user_data_str:
+                dispatcher.utter_message(text="Hello, user!")
+                return self._send_image(dispatcher)
+            
+            try:
+                user = json.loads(user_data_str)
+                
+                if not isinstance(user, dict):
+                    dispatcher.utter_message(text="Hello, user!")
+                    return self._send_image(dispatcher)
+                
+                name = user.get('name')
+                if not name:
+                    dispatcher.utter_message(text="Hello, user!")
+                    return self._send_image(dispatcher)
+                
+                dispatcher.utter_message(text=f"Hello, {name}!")
+                return self._send_image(dispatcher)
+                
+            except json.JSONDecodeError:
+                dispatcher.utter_message(text="Hello, user!")
+                return self._send_image(dispatcher)
+                
+        except Exception:
+            dispatcher.utter_message(text="Hello, user!")
+            return self._send_image(dispatcher)
+    
+    def _send_image(self, dispatcher: CollectingDispatcher) -> List[Dict[Text, Any]]:
         image_url = "https://cdn.pixabay.com/photo/2021/11/20/03/16/doctor-6810750_640.png"
         dispatcher.utter_message(image=image_url)
-
         return []
