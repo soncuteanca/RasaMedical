@@ -142,6 +142,16 @@ def login():
             logger.error(f"Error during login: {str(e)}")
             return jsonify({'error': str(e)}), 500
 
+@app.route('/api/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    try:
+        # Delete the user directly
+        db_manager.execute_query("DELETE FROM users WHERE id = %s", (user_id,), fetch=False)
+        return jsonify({'message': 'User account deleted successfully'}), 200
+    except Exception as e:
+        logger.error(f"Error deleting user: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     # Test database connection on startup
     try:

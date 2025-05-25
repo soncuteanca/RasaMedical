@@ -197,7 +197,35 @@
             <li class="empty-msg">Loading medical records...</li>
         </ul>
     </div>
+    <div class="section">
+        <button id="deleteAccountBtn" class="button button-delete" style="background-color: #fff; color: #4CAF50; border: 2px solid #4CAF50; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: all 0.2s ease;">Delete Account</button>
+    </div>
 </div>
+
+<!-- Delete Account Confirmation Modal -->
+<div id="deleteModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:#fff; padding:30px 40px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.2); text-align:center; max-width:400px;">
+        <div style="font-size:48px; color:#4CAF50; margin-bottom:15px;">⚠️</div>
+        <h3 style="color:#4CAF50; margin-top:0;">Warning: Delete Account</h3>
+        <p style="font-size:16px; color:#333; margin-bottom:10px; font-weight:bold;">This action is permanent and cannot be undone!</p>
+        <p style="font-size:16px; color:#666; margin-bottom:20px;">All your data will be permanently deleted from our system.</p>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button onclick="closeDeleteModal()" style="padding:10px 20px; font-size:16px; border:none; background:#4CAF50; color:#fff; border-radius:5px; cursor:pointer;">Cancel</button>
+            <button onclick="confirmDeleteAccount()" style="padding:10px 20px; font-size:16px; border:2px solid #4CAF50; background:#fff; color:#4CAF50; border-radius:5px; cursor:pointer;">Yes, Delete My Account</button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Message Modal -->
+<div id="successModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:#fff; padding:30px 40px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.2); text-align:center; max-width:400px;">
+        <div style="font-size:48px; color:#4CAF50; margin-bottom:15px;">✓</div>
+        <h3 style="color:#4CAF50; margin-top:0;">Account Deleted</h3>
+        <p style="font-size:16px; color:#333; margin-bottom:20px;">Your account has been successfully deleted. You will be redirected to the home page.</p>
+        <button onclick="redirectToHome()" style="padding:10px 20px; font-size:16px; border:none; background:#4CAF50; color:#fff; border-radius:5px; cursor:pointer;">OK</button>
+    </div>
+</div>
+
 <script>
 // Show Logout if logged in, else show Create Account. Show user name instead of Login if logged in.
 window.addEventListener('DOMContentLoaded', function() {
@@ -270,6 +298,61 @@ fetch(`http://localhost:5000/api/records?user_id=${userObj.id}`)
     .catch(() => {
         document.getElementById('recordList').innerHTML = '<li class="empty-msg">Failed to load medical records.</li>';
     });
+
+// Add delete account functionality
+document.getElementById('deleteAccountBtn').addEventListener('click', function() {
+    document.getElementById('deleteModal').style.display = 'flex';
+});
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+}
+
+async function confirmDeleteAccount() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user || !user.id) {
+        alert('Error: User information not found');
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:5000/api/users/${user.id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            // Clear local storage
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('user');
+            // Show success message
+            document.getElementById('deleteModal').style.display = 'none';
+            document.getElementById('successModal').style.display = 'flex';
+        } else {
+            const result = await response.json();
+            alert('Error deleting account: ' + result.error);
+        }
+    } catch (error) {
+        alert('Error deleting account: ' + error.message);
+    }
+}
+
+function redirectToHome() {
+    window.location.href = 'home_page.html';
+}
+
+// Add hover effect for delete button
+document.getElementById('deleteAccountBtn').addEventListener('mouseover', function() {
+    this.style.backgroundColor = '#4CAF50';
+    this.style.color = '#fff';
+});
+
+document.getElementById('deleteAccountBtn').addEventListener('mouseout', function() {
+    this.style.backgroundColor = '#fff';
+    this.style.color = '#4CAF50';
+});
 </script>
 </body>
 </html> 
