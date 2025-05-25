@@ -50,8 +50,8 @@ nlu:
     - What kind of treatments do you offer?
     - Can you tell me about your services?
 
-- intent: fetch_users
+- intent: list_doctors
   examples: |
-    - Show me all users
-    - Fetch users from the database
-    - Can you list all users?
+    - Show me all doctors
+    - List the doctors
+    - Who are the doctors?

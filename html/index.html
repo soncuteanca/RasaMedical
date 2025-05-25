@@ -145,8 +145,7 @@
 
     socket.on('bot_uttered', (data) => {
         if (data.text) {
-            chatBox.innerHTML += `<div class="chat-message bot">Assistant: ${data.text}</div>`;
-        } else if (data.attachment && data.attachment.type === "image") {
+            chatBox.innerHTML += `<div class="chat-message bot">Assistant: ${data.text.replace(/\n/g, '<br>')}</div>`;        } else if (data.attachment && data.attachment.type === "image") {
             let imageUrl = data.attachment.payload.src;
             chatBox.innerHTML += `<div class="chat-message bot"><img src="${imageUrl}" alt="Bot Image" style="max-width: 100%; height: auto;"></div>`;
         }

@@ -20,3 +20,8 @@ stories:
     steps:
       - intent: fetch_users
       - action: action_fetch_users
+
+  - story: List all doctors
+    steps:
+      - intent: list_doctors
+      - action: action_list_doctors

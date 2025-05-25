@@ -11,7 +11,22 @@ intents:
   - ask_location_intent
   - ask_services_intent
   - fetch_users
+  - list_doctors
+  - ask_doctors_by_specialty
 
+entities:
+  - specialty
+
+slots:
+  specialty:
+    type: categorical
+    values:
+      - Adult Cardiology
+      - Pediatric Cardiology
+      - Cardiovascular Surgery
+    mappings:
+    - type: from_entity
+      entity: specialty
 
 responses:
   utter_greet:
@@ -41,7 +56,8 @@ responses:
 actions:
   - action_greet_user
   - action_fetch_users
-
+  - action_list_doctors
+  - action_list_doctors_by_specialty
 
 session_config:
   session_expiration_time: 60
