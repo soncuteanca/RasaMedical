@@ -51,7 +51,7 @@ responses:
     - text: "Our clinic is located at 123 Health Street, Medical City. Feel free to visit us or call for directions!"
 
   utter_services:
-      - text: "We offer general check-ups, diagnostic services, specialist consultations, and vaccinations. Let us know how we can help!"
+      - text: "We offer comprehensive cardiology services including consultations, diagnostic tests, and treatments for various heart conditions. Our team of cardiologists provides both preventive care and specialized treatments. How can we help you today?"
 
 actions:
   - action_greet_user

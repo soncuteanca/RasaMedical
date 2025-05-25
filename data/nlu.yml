@@ -49,6 +49,8 @@ nlu:
     - What services do you provide?
     - What kind of treatments do you offer?
     - Can you tell me about your services?
+    - What procedures do you perform?
+    - What treatments are available?
 
 - intent: list_doctors
   examples: |
