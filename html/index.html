@@ -6,30 +6,32 @@
     <title>Chat with Medical Assistant</title>
     <style>
         body {
-            background-color: #E8F5E9;
+            background-color: #CFC3BD;
             font-family: Arial, sans-serif;
             font-size: 16px;
-            color: #2b2b2b;
+            color: #2C2C2C;
             margin: 0;
         }
 
         .chat-container {
             max-width: 800px;
             margin: 50px auto;
-            border: 1px solid #4CAF50;
+            border: 1.5px solid #5E1F28;
             padding: 20px;
             position: relative;
-            background-color: #fff;
+            background-color: #B3A09A;
             border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(114, 47, 55, 0.25);
         }
 
         .chat-box {
             height: 400px;
             overflow-y: auto;
-            border: 1px solid #4CAF50;
+            border: 1.5px solid #5E1F28;
             padding: 20px;
             border-radius: 10px;
             scroll-behavior: smooth;
+            background-color: #CFC3BD;
         }
 
         .input-box {
@@ -42,17 +44,29 @@
             flex: 1;
             padding: 10px 15px;
             margin-right: 10px;
-            border: 1px solid #4CAF50;
+            border: 1.5px solid #5E1F28;
             border-radius: 5px;
+            background-color: #CFC3BD;
+            color: #2C2C2C;
+        }
+
+        #userInput::placeholder {
+            color: #888;
         }
 
         button {
             padding: 10px 20px;
             border: none;
-            background-color: #4CAF50;
-            color: #fff;
+            background-color: #5E1F28;
+            color: #F0EDEA;
             border-radius: 5px;
             cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #4A1F24;
+            color: #F0EDEA;
         }
 
         .chat-message {
@@ -60,18 +74,18 @@
         }
 
         .bot {
-            color: #4CAF50;
+            color: #722F37;
             font-weight: bold;
         }
 
         .user {
-            color: #333;
+            color: #2C2C2C;
             font-weight: bold;
         }
 
         .header {
-            background-color: #4CAF50;
-            color: #fff;
+            background-color: #5E1F28;
+            color: #F0EDEA;
             padding: 10px 20px;
             display: flex;
             justify-content: space-between;
@@ -80,9 +94,26 @@
         }
 
         .back-button {
-            color: #fff;
+            color: #F0EDEA;
             text-decoration: none;
             font-weight: bold;
+        }
+
+        .back-button:hover {
+            color: #D4B4B4;
+        }
+
+        footer {
+            background-color: #5E1F28;
+            color: #F0EDEA;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
 
     </style>

@@ -49,6 +49,6 @@ class ActionGreetUser(Action):
             return self._send_image(dispatcher)
     
     def _send_image(self, dispatcher: CollectingDispatcher) -> List[Dict[Text, Any]]:
-        image_url = "https://cdn.pixabay.com/photo/2021/11/20/03/16/doctor-6810750_640.png"
+        image_url = "https://i.imgur.com/0a8RIwP.png"
         dispatcher.utter_message(image=image_url)
         return []

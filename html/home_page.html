@@ -5,16 +5,16 @@
     <title>Medical Assistant</title>
     <style>
         body {
-            background-color: #E8F5E9; /* light green background */
+            background-color: #CFC3BD; /* light creamy beige */
             font-family: Arial, sans-serif;
             font-size: 16px;
-            color: #2b2b2b;
+            color: #2C2C2C;
             margin: 0;
         }
 
         header {
-            background-color: #4CAF50;
-            color: #fff;
+            background-color: #5E1F28;
+            color: #F0EDEA;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -59,33 +59,24 @@
         }
 
         .button-chat {
-            background: #fff;
-            color: #2b8a28;
-            border: 2px solid #2b8a28;
+            background: #B3A09A;
+            color: #5E1F28;
+            border: 2px solid #5E1F28;
         }
         .button-chat:hover {
-            background: #e8f5e9;
-            color: #176617;
+            background: #4A1F24;
+            color: #F0EDEA;
         }
 
-        .button-login, .button-create {
-            background-color: #2b8a28;
-            color: #fff;
-            border: 2px solid #2b8a28;
+        .button-login, .button-create, .button-logout {
+            background-color: #4A1F24;
+            color: #F0EDEA;
+            border: 2px solid #4A1F24;
         }
-        .button-login:hover, .button-create:hover {
-            background-color: #176617;
-            color: #fff;
-        }
-
-        .button-logout {
-            background-color: #444;
-            color: #fff;
-            border: 2px solid #444;
-        }
-        .button-logout:hover {
-            background-color: #222;
-            border-color: #222;
+        .button-login:hover, .button-create:hover, .button-logout:hover {
+            background-color: #B3A09A;
+            color: #5E1F28;
+            border-color: #B3A09A;
         }
 
         @media (max-width: 600px) {
@@ -103,40 +94,52 @@
         }
 
         nav {
-            width: 250px; /* width of the side nav */
+            width: 250px;
             height: 100vh;
             position: fixed;
-            top: 60px; /* below header */
+            top: 0;
             left: 0;
-            background-color: #C8E6C9; /* nav color */
-            padding: 20px 0;
+            background-color: #B3A09A; /* classic greige */
+            padding: 20px 0 0 0;
+            padding-top: 60px;
             overflow-y: auto;
         }
 
         .menu-item {
             display: block;
             text-decoration: none;
-            color: #2b2b2b;
+            color: #2C2C2C;
             font-size: 18px;
             font-weight: bold;
             padding: 10px;
             margin: 10px 20px;
-            transition: color 0.2s ease-in-out;
+            border-radius: 6px;
+            transition: background 0.2s, color 0.2s;
         }
 
-        .menu-item:hover {
-            color: #4CAF50;
+        .menu-item:hover, .menu-item.active {
+            background: #722F37;
+            color: #FFD6D6;
         }
 
         main {
-            margin-left: 250px; /* space for the side nav */
-            margin-top: 80px; /* space for the header */
+            margin-left: 250px;
+            margin-top: 80px;
             padding: 20px;
+            background-color: #CFC3BD;
+        }
+
+        main h2, main h3 {
+            color: #722F37;
+        }
+
+        main p {
+            color: #2C2C2C;
         }
 
         footer {
-            background-color: #4CAF50;
-            color: #fff;
+            background-color: #5E1F28;
+            color: #F0EDEA;
             display: flex;
             justify-content: center;
             align-items: center;

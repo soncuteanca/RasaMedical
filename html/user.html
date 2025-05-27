@@ -5,14 +5,14 @@
     <title>User Profile - Medical Assistant</title>
     <style>
         body {
-            background-color: #E8F5E9;
+            background-color: #CFC3BD;
             font-family: Arial, sans-serif;
             margin: 0;
-            color: #2b2b2b;
+            color: #2C2C2C;
         }
         header {
-            background-color: #4CAF50;
-            color: #fff;
+            background-color: #5E1F28;
+            color: #F0EDEA;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -49,35 +49,27 @@
             margin: 0;
             text-align: center;
             font-weight: bold;
-            border: 2px solid #2b8a28;
+            border: 2px solid #5E1F28;
             box-sizing: border-box;
         }
         .button-chat {
-            background: #fff;
-            color: #2b8a28;
-            border: 2px solid #2b8a28;
+            background: #B3A09A;
+            color: #5E1F28;
+            border: 2px solid #5E1F28;
         }
         .button-chat:hover {
-            background: #e8f5e9;
-            color: #176617;
+            background: #4A1F24;
+            color: #F0EDEA;
         }
-        .button-login, .button-create {
-            background-color: #2b8a28;
-            color: #fff;
-            border: 2px solid #2b8a28;
+        .button-login, .button-create, .button-logout {
+            background-color: #4A1F24;
+            color: #F0EDEA;
+            border: 2px solid #4A1F24;
         }
-        .button-login:hover, .button-create:hover {
-            background-color: #176617;
-            color: #fff;
-        }
-        .button-logout {
-            background-color: #444;
-            color: #fff;
-            border: 2px solid #444;
-        }
-        .button-logout:hover {
-            background-color: #222;
-            border-color: #222;
+        .button-login:hover, .button-create:hover, .button-logout:hover {
+            background-color: #B3A09A;
+            color: #5E1F28;
+            border-color: #B3A09A;
         }
         @media (max-width: 600px) {
             .title {
@@ -95,17 +87,17 @@
         .container {
             max-width: 900px;
             margin: 100px auto 40px auto;
-            background: #fff;
+            background: #B3A09A;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             padding: 32px 40px 40px 40px;
         }
         h2 {
-            color: #4CAF50;
+            color: #5E1F28;
             margin-top: 0;
         }
         .profile-section {
-            border-bottom: 1px solid #C8E6C9;
+            border-bottom: 1px solid #B3A09A;
             padding-bottom: 18px;
             margin-bottom: 24px;
         }
@@ -117,14 +109,15 @@
         .profile-avatar {
             width: 80px;
             height: 80px;
-            border-radius: 50%;
-            background: #C8E6C9;
+            border-radius: 10px;
+            background: #B3A09A;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 36px;
-            color: #4CAF50;
+            color: #5E1F28;
             font-weight: bold;
+            border: 2px solid #5E1F28;
         }
         .profile-details {
             flex: 1;
@@ -134,7 +127,7 @@
         }
         .section-title {
             font-size: 20px;
-            color: #2b8a28;
+            color: #5E1F28;
             margin-bottom: 10px;
         }
         .record-list, .appointment-list {
@@ -142,7 +135,7 @@
             padding: 0;
         }
         .record-list li, .appointment-list li {
-            background: #F1F8E9;
+            background: #CFC3BD;
             margin-bottom: 10px;
             padding: 14px 18px;
             border-radius: 8px;
@@ -155,12 +148,72 @@
         .back-link {
             display: inline-block;
             margin-bottom: 18px;
-            color: #4CAF50;
+            color: #5E1F28;
             text-decoration: none;
             font-weight: bold;
         }
         .back-link:hover {
             text-decoration: underline;
+        }
+        .button-delete {
+            background-color: #5E1F28;
+            color: #F0EDEA;
+            border: 2px solid #5E1F28;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background 0.2s, color 0.2s, border 0.2s;
+        }
+        .button-delete:hover {
+            background-color: #4A1F24;
+            color: #F0EDEA;
+            border-color: #4A1F24;
+        }
+        #deleteModal .modal-content, #successModal .modal-content {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 400px;
+            border-top: 4px solid #5E1F28;
+            padding: 30px 40px;
+        }
+        #deleteModal h3, #successModal h3 {
+            color: #5E1F28;
+            margin-top: 0;
+        }
+        #deleteModal .modal-icon, #successModal .modal-icon {
+            font-size: 48px;
+            color: #5E1F28;
+            margin-bottom: 15px;
+        }
+        #deleteModal .modal-btn, #successModal .modal-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            background: #5E1F28;
+            color: #F0EDEA;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0 5px;
+            transition: background 0.2s;
+        }
+        #deleteModal .modal-btn:hover, #successModal .modal-btn:hover {
+            background: #4A1F24;
+        }
+        #deleteModal .modal-btn.danger {
+            background: #fff;
+            color: #5E1F28;
+            border: 2px solid #5E1F28;
+            transition: background 0.2s, color 0.2s, border 0.2s;
+        }
+        #deleteModal .modal-btn.danger:hover {
+            background: #5E1F28;
+            color: #F0EDEA;
+            border-color: #5E1F28;
         }
     </style>
 </head>
@@ -198,31 +251,31 @@
         </ul>
     </div>
     <div class="section">
-        <button id="deleteAccountBtn" class="button button-delete" style="background-color: #fff; color: #4CAF50; border: 2px solid #4CAF50; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: all 0.2s ease;">Delete Account</button>
+        <button id="deleteAccountBtn" class="button button-delete">Delete Account</button>
     </div>
 </div>
 
 <!-- Delete Account Confirmation Modal -->
 <div id="deleteModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
-    <div style="background:#fff; padding:30px 40px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.2); text-align:center; max-width:400px;">
-        <div style="font-size:48px; color:#4CAF50; margin-bottom:15px;">⚠️</div>
-        <h3 style="color:#4CAF50; margin-top:0;">Warning: Delete Account</h3>
+    <div class="modal-content">
+        <div class="modal-icon">⚠️</div>
+        <h3>Warning: Delete Account</h3>
         <p style="font-size:16px; color:#333; margin-bottom:10px; font-weight:bold;">This action is permanent and cannot be undone!</p>
         <p style="font-size:16px; color:#666; margin-bottom:20px;">All your data will be permanently deleted from our system.</p>
         <div style="display:flex; gap:10px; justify-content:center;">
-            <button onclick="closeDeleteModal()" style="padding:10px 20px; font-size:16px; border:none; background:#4CAF50; color:#fff; border-radius:5px; cursor:pointer;">Cancel</button>
-            <button onclick="confirmDeleteAccount()" style="padding:10px 20px; font-size:16px; border:2px solid #4CAF50; background:#fff; color:#4CAF50; border-radius:5px; cursor:pointer;">Yes, Delete My Account</button>
+            <button onclick="closeDeleteModal()" class="modal-btn">Cancel</button>
+            <button onclick="confirmDeleteAccount()" class="modal-btn danger">Yes, Delete My Account</button>
         </div>
     </div>
 </div>
 
 <!-- Success Message Modal -->
 <div id="successModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
-    <div style="background:#fff; padding:30px 40px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.2); text-align:center; max-width:400px;">
-        <div style="font-size:48px; color:#4CAF50; margin-bottom:15px;">✓</div>
-        <h3 style="color:#4CAF50; margin-top:0;">Account Deleted</h3>
+    <div class="modal-content">
+        <div class="modal-icon">✓</div>
+        <h3>Account Deleted</h3>
         <p style="font-size:16px; color:#333; margin-bottom:20px;">Your account has been successfully deleted. You will be redirected to the home page.</p>
-        <button onclick="redirectToHome()" style="padding:10px 20px; font-size:16px; border:none; background:#4CAF50; color:#fff; border-radius:5px; cursor:pointer;">OK</button>
+        <button onclick="redirectToHome()" class="modal-btn">OK</button>
     </div>
 </div>
 
@@ -342,17 +395,6 @@ async function confirmDeleteAccount() {
 function redirectToHome() {
     window.location.href = 'home_page.html';
 }
-
-// Add hover effect for delete button
-document.getElementById('deleteAccountBtn').addEventListener('mouseover', function() {
-    this.style.backgroundColor = '#4CAF50';
-    this.style.color = '#fff';
-});
-
-document.getElementById('deleteAccountBtn').addEventListener('mouseout', function() {
-    this.style.backgroundColor = '#fff';
-    this.style.color = '#4CAF50';
-});
 </script>
 </body>
 </html> 
