@@ -14,10 +14,10 @@
         }
 
         .chat-container {
-            max-width: 800px;
-            margin: 50px auto;
+            max-width: 1100px;
+            margin: 60px auto;
             border: 1.5px solid #5E1F28;
-            padding: 20px;
+            padding: 32px;
             position: relative;
             background-color: #B3A09A;
             border-radius: 10px;
@@ -25,14 +25,14 @@
         }
 
         .chat-box {
-            height: 400px;
+            height: 600px;
             overflow-y: auto;
             border: 1.5px solid #5E1F28;
-            padding: 20px;
+            padding: 28px;
             border-radius: 10px;
             scroll-behavior: smooth;
             background-color: #CFC3BD;
-            font-size: 20px;
+            font-size: 24px;
         }
 
         .input-box {
@@ -48,7 +48,9 @@
             border: 1.5px solid #5E1F28;
             border-radius: 5px;
             background-color: #CFC3BD;
-            color: #2C2C2C;
+            color: #3E2723;
+            font-weight: bold;
+            font-size: 20px;
         }
 
         #userInput::placeholder {
@@ -56,13 +58,14 @@
         }
 
         button {
-            padding: 10px 20px;
+            padding: 12px 28px;
             border: none;
             background-color: #5E1F28;
             color: #F0EDEA;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 20px;
         }
 
         button:hover {
@@ -71,8 +74,8 @@
         }
 
         .chat-message {
-            margin-bottom: 15px;
-            font-size: 20px;
+            margin-bottom: 24px;
+            font-size: 24px;
         }
 
         .bot {
@@ -81,8 +84,9 @@
         }
 
         .user {
-            color: #2C2C2C;
+            color: #3E2723;
             font-weight: bold;
+            text-transform: capitalize;
         }
 
         .header {
@@ -189,6 +193,13 @@
         if (event.keyCode === 13) {
             sendMessage();
             event.preventDefault();
+        }
+    });
+
+    document.getElementById('userInput').addEventListener('input', function (event) {
+        let val = event.target.value;
+        if (val.length > 0) {
+            event.target.value = val.charAt(0).toUpperCase() + val.slice(1);
         }
     });
 </script>
