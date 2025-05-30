@@ -16,10 +16,10 @@
         .chat-container {
             max-width: 1100px;
             margin: 60px auto;
-            border: 1.5px solid #5E1F28;
+            border: none;
             padding: 32px;
             position: relative;
-            background-color: #B3A09A;
+            background-color: #c1a696;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(114, 47, 55, 0.25);
         }
@@ -33,6 +33,25 @@
             scroll-behavior: smooth;
             background-color: #CFC3BD;
             font-size: 24px;
+            box-sizing: border-box;
+        }
+
+        .chat-box::-webkit-scrollbar {
+            width: 12px;
+            background: #cfc3bd;
+        }
+        .chat-box::-webkit-scrollbar-thumb {
+            background: #b3a09a;
+            border-radius: 6px;
+        }
+        .chat-box::-webkit-scrollbar-track {
+            background: #cfc3bd;
+            border-radius: 6px;
+        }
+        /* For Firefox */
+        .chat-box {
+            scrollbar-color: #b3a09a #cfc3bd;
+            scrollbar-width: thin;
         }
 
         .input-box {
@@ -54,7 +73,7 @@
         }
 
         #userInput::placeholder {
-            color: #888;
+            color: #722F37;
         }
 
         button {
