@@ -91,6 +91,7 @@
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             padding: 32px 40px 40px 40px;
+            position: relative;
         }
         h2 {
             color: #5E1F28;
@@ -215,6 +216,29 @@
             color: #F0EDEA;
             border-color: #5E1F28;
         }
+        .delete-account-link {
+            display: inline-block;
+            color: #a3866a;
+            font-size: 15px;
+            text-decoration: none;
+            background: none;
+            border: 1.5px solid #a3866a;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 8px 18px;
+            font-weight: normal;
+            transition: color 0.2s, border-color 0.2s, background 0.2s;
+        }
+        .delete-account-link:hover {
+            color: #fff;
+            background: #a3866a;
+            border-color: #a3866a;
+        }
+        .delete-section {
+            position: absolute;
+            right: 40px;
+            bottom: 40px;
+        }
     </style>
 </head>
 <body>
@@ -234,7 +258,6 @@
             <div class="profile-avatar" id="profileAvatar">U</div>
             <div class="profile-details">
                 <h2 id="profileName">User Name</h2>
-                <div id="profileEmail">user@email.com</div>
             </div>
         </div>
     </div>
@@ -309,7 +332,6 @@ if (!user) {
 }
 const userObj = JSON.parse(user);
 document.getElementById('profileName').textContent = userObj.name || 'User';
-document.getElementById('profileEmail').textContent = userObj.email || '';
 document.getElementById('profileAvatar').textContent = userObj.name ? userObj.name.charAt(0).toUpperCase() : 'U';
 
 // Fetch appointments
@@ -353,7 +375,8 @@ fetch(`http://localhost:5000/api/records?user_id=${userObj.id}`)
     });
 
 // Add delete account functionality
-document.getElementById('deleteAccountBtn').addEventListener('click', function() {
+document.getElementById('deleteAccountBtn').addEventListener('click', function(event) {
+    event.preventDefault();
     document.getElementById('deleteModal').style.display = 'flex';
 });
 
