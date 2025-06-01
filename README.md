@@ -83,17 +83,17 @@ python server.py
 ```
 This runs on port 5000 and handles user creation and management.
 
-2. **Rasa Server** (for chat functionality):
-```bash
-rasa run -m models --enable-api --cors "*" --debug
-```
-This runs the Rasa model and enables the chat API.
-
-3. **Rasa Action Server** (for custom actions):
+2. **Rasa Action Server** (for custom actions):
 ```bash
 rasa run actions
 ```
 This runs the custom actions like fetching users.
+
+3. **Rasa Server** (for chat functionality):
+```bash
+rasa run -m models --enable-api --cors "*" --debug
+```
+This runs the Rasa model and enables the chat API.
 
 ### 4. Access the Application
 
