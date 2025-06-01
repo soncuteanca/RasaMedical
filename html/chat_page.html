@@ -67,13 +67,13 @@
             border: 1.5px solid #5E1F28;
             border-radius: 5px;
             background-color: #CFC3BD;
-            color: #3E2723;
+            color: #8B4513;
             font-weight: bold;
             font-size: 20px;
         }
 
         #userInput::placeholder {
-            color: #722F37;
+            color: #B8956A;
         }
 
         button {
@@ -97,15 +97,32 @@
             font-size: 24px;
         }
 
-        .bot {
-            color: #722F37;
+        /* Updated styling for bot messages - Burgundy colors */
+        .bot .label {
+            color: #800020;
             font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
         }
 
-        .user {
-            color: #3E2723;
+        .bot .text {
+            color: #9F1239;
+            font-weight: normal;
+            display: block;
+        }
+
+        /* Updated styling for user messages - Brown colors */
+        .user .label {
+            color: #8B4513;
             font-weight: bold;
-            text-transform: capitalize;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .user .text {
+            color: #A0522D;
+            font-weight: normal;
+            display: block;
         }
 
         .header {
@@ -175,7 +192,7 @@
         const inputField = document.getElementById('userInput');
         const message = inputField.value;
         if (message.trim() !== "") {
-            chatBox.innerHTML += `<div class="chat-message user">You: ${message}</div>`;
+            chatBox.innerHTML += `<div class="chat-message user"><span class="label">You:</span><span class="text">${message}</span></div>`;
             const user = localStorage.getItem('user');
             socket.emit('user_uttered', {
                 message: message,
@@ -201,7 +218,8 @@
 
     socket.on('bot_uttered', (data) => {
         if (data.text) {
-            chatBox.innerHTML += `<div class="chat-message bot">Assistant: ${data.text.replace(/\n/g, '<br>')}</div>`;        } else if (data.attachment && data.attachment.type === "image") {
+            chatBox.innerHTML += `<div class="chat-message bot"><span class="label">Assistant:</span><span class="text">${data.text.replace(/\n/g, '<br>')}</span></div>`;
+        } else if (data.attachment && data.attachment.type === "image") {
             let imageUrl = data.attachment.payload.src;
             chatBox.innerHTML += `<div class="chat-message bot"><img src="${imageUrl}" alt="Bot Image" style="max-width: 100%; height: auto;"></div>`;
         }
