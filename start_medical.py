@@ -2,6 +2,30 @@ import subprocess
 import time
 import os
 
+# Create and run a temporary .bat file to kill ports
+bat_script = """
+@echo off
+echo Killing any processes on ports 5000 and 5005...
+for %%P in (5000 5005 5055) do (
+    for /f "tokens=5" %%a in ('netstat -aon ^| findstr :%%P') do (
+        echo Killing PID %%a on port %%P
+        taskkill /PID %%a /F >nul 2>&1
+    )
+)
+"""
+
+# Write to a temporary file
+bat_file = "kill_ports.bat"
+with open(bat_file, "w") as f:
+    f.write(bat_script)
+
+# Execute the batch file
+subprocess.call([bat_file])
+
+# Optionally remove the batch file afterward
+os.remove(bat_file)
+
+# Separator
 print("=" * 60)
 print("Starting Rasa Medical Chatbot")
 print("=" * 60)
