@@ -5,72 +5,80 @@ intents:
   - goodbye_intent
   - bot_challenge_intent
   - get_started_intent
-  - nlu_fallback
   - thanks_intent
-  - ask_working_hours_intent
   - ask_location_intent
+  - ask_working_hours_intent
   - ask_services_intent
-  - fetch_users
   - list_doctors
-  - ask_doctors_by_specialty
   - ask_contact_intent
   - ask_parking_intent
   - ask_insurance_intent
-
+  - report_symptom_intent
+  - affirm
+  - ask_doctors_by_specialty
+  - emergency_intent
+  - fetch_users
+  - nlu_fallback
 
 entities:
   - specialty
 
 slots:
   specialty:
-    type: categorical
-    values:
-      - Adult Cardiology
-      - Pediatric Cardiology
-      - Cardiovascular Surgery
+    type: text
+    influence_conversation: true
     mappings:
     - type: from_entity
       entity: specialty
 
 responses:
   utter_greet:
-    - text: "How can I help you?"
+    - text: "Hello! Welcome to our cardiology clinic. How can I help you today?"
 
   utter_goodbye:
-    - text: "Goodbye! Have a great day!"
+    - text: "Thank you for visiting our clinic. Take care and have a great day!"
 
   utter_iamabot:
-    - text: "I am a medical assistant bot, powered by Rasa."
-
-  utter_default:
-      - text: "I'm sorry, I didn't understand that. Could you please rephrase?"
+    - text: "I am a virtual assistant for our cardiology clinic. I'm here to help you with information about our services, doctors, and appointments."
 
   utter_thanks:
-    - text: "You're welcome! Let me know if there's anything else I can help with."
-
-  utter_working_hours:
-    - text: "Our working hours are Monday to Friday, 9:00 AM to 6:00 PM. We are closed on weekends."
-
-  utter_location:
-    - text: "Our clinic is located at 123 Health Street, Medical City. Feel free to visit us or call for directions!"
-
-  utter_services:
-      - text: "We offer comprehensive cardiology services including consultations, diagnostic tests, and treatments for various heart conditions. Our team of cardiologists provides both preventive care and specialized treatments. How can we help you today?"
+    - text: "You're very welcome! Is there anything else I can help you with?"
 
   utter_contact:
-    - text: "You can reach us at +123456789 or email us at contact@medicalclinic.com."
+    - text: "You can reach us at:\n📞 Phone: +1 (555) 123-4567\n📧 Email: info@cardiologyclinic.com"
 
   utter_parking:
-    - text: "Yes, we have free parking available for patients in front of the clinic."
+    - text: "Yes, we have free parking available for all patients. Our parking lot is located directly in front of the clinic building."
 
   utter_insurance:
-    - text: "We accept insurance plans. Please bring your insure with you and make sure is valid, or call us to confirm."
+    - text: "We accept most major insurance plans including Medicare, Medicaid, Blue Cross Blue Shield, Aetna, and Cigna. Please call us to verify your specific plan."
+
+  utter_working_hours:
+    - text: "Our clinic hours are:\n🕐 Monday - Friday: 8:00 AM - 6:00 PM\n🕐 Saturday: 9:00 AM - 2:00 PM\n🕐 Sunday: Closed"
+
+  utter_location:
+    - text: "Our clinic is located at:\n📍 123 Heart Health Avenue, Medical District, City, State 12345\nWe're on the second floor of the Medical Plaza building."
+
+  utter_services:
+    - text: "We offer comprehensive cardiology services including:\n• Diagnostic cardiology\n• Preventive cardiology\n• Interventional procedures\n• Cardiac imaging\n• Heart rhythm management\n• Pediatric cardiology\n• Cardiovascular surgery"
+
+  utter_emergency:
+    - text: "🚨 If you're experiencing a medical emergency, please call 911 immediately or go to your nearest emergency room. Do not wait for an appointment."
+
+  utter_symptom_acknowledgement:
+    - text: "I'm sorry you're feeling unwell. Would you like to see a specialist?"
+
+  utter_list_specialists:
+    - text: "We have Adult Cardiologists, Pediatric Cardiologists, and Cardiovascular Surgeons. Which one would you like to consult?"
+
+  utter_default:
+    - text: "I'm sorry, I didn't understand that. I can help you with information about our doctors, services, location, hours, or appointments. What would you like to know?"
 
 actions:
   - action_greet_user
-  - action_fetch_users
   - action_list_doctors
   - action_list_doctors_by_specialty
+  - action_fetch_users
 
 session_config:
   session_expiration_time: 60

@@ -5,3 +5,55 @@ stories:
     steps:
       - intent: fetch_users
       - action: action_fetch_users
+
+  - story: User reports a symptom and gets specialist help
+    steps:
+      - intent: report_symptom_intent
+      - action: utter_symptom_acknowledgement
+      - intent: affirm
+      - action: utter_list_specialists
+      - intent: ask_doctors_by_specialty
+        entities:
+        - entity: specialty
+          value: "Adult Cardiology"
+      - action: action_list_doctors_by_specialty
+
+  - story: User directly asks for adult cardiology doctors
+    steps:
+      - intent: ask_doctors_by_specialty
+        entities:
+        - entity: specialty
+          value: "Adult Cardiology"
+      - action: action_list_doctors_by_specialty
+
+  - story: User directly asks for pediatric cardiology doctors
+    steps:
+      - intent: ask_doctors_by_specialty
+        entities:
+        - entity: specialty
+          value: "Pediatric Cardiology"
+      - action: action_list_doctors_by_specialty
+
+  - story: User directly asks for cardiovascular surgery doctors
+    steps:
+      - intent: ask_doctors_by_specialty
+        entities:
+        - entity: specialty
+          value: "Cardiovascular Surgery"
+      - action: action_list_doctors_by_specialty
+
+  - story: User says adult and gets adult cardiology
+    steps:
+      - intent: ask_doctors_by_specialty
+        entities:
+        - entity: specialty
+          value: "Adult"
+      - action: action_list_doctors_by_specialty
+
+  - story: User says pediatric and gets pediatric cardiology
+    steps:
+      - intent: ask_doctors_by_specialty
+        entities:
+        - entity: specialty
+          value: "Pediatric"
+      - action: action_list_doctors_by_specialty
