@@ -13,6 +13,10 @@ intents:
   - fetch_users
   - list_doctors
   - ask_doctors_by_specialty
+  - ask_contact_intent
+  - ask_parking_intent
+  - ask_insurance_intent
+
 
 entities:
   - specialty
@@ -52,6 +56,15 @@ responses:
 
   utter_services:
       - text: "We offer comprehensive cardiology services including consultations, diagnostic tests, and treatments for various heart conditions. Our team of cardiologists provides both preventive care and specialized treatments. How can we help you today?"
+
+  utter_contact:
+    - text: "You can reach us at +123456789 or email us at contact@medicalclinic.com."
+
+  utter_parking:
+    - text: "Yes, we have free parking available for patients in front of the clinic."
+
+  utter_insurance:
+    - text: "We accept insurance plans. Please bring your insure with you and make sure is valid, or call us to confirm."
 
 actions:
   - action_greet_user

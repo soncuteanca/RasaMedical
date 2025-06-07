@@ -57,3 +57,31 @@ nlu:
     - Show me all doctors
     - List the doctors
     - Who are the doctors?
+
+- intent: ask_contact_intent
+  examples: |
+    - What's your phone number?
+    - How can I call you?
+    - What's your contact number?
+    - Can I get your email?
+    - Email
+    - Phone
+    - Call
+    - Contact info
+    - Give me your number
+    - Tell me your email
+
+- intent: ask_parking_intent
+  examples: |
+    - Is parking available?
+    - Where can I park?
+    - Do you have parking spaces?
+    - Is there free parking?
+
+- intent: ask_insurance_intent
+  examples: |
+    - Do you accept insurance?
+    - What insurance do you take?
+    - Can I use my health insurance?
+    - Which insurance plans do you accept?
+    - Insurance

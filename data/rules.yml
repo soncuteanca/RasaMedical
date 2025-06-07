@@ -27,8 +27,42 @@ rules:
     - intent: nlu_fallback
     - action: utter_default
 
-
 - rule: Respond to thanks
   steps:
     - intent: thanks_intent
     - action: utter_thanks
+
+- rule: Provide contact information
+  steps:
+    - intent: ask_contact_intent
+    - action: utter_contact
+
+- rule: Provide parking information
+  steps:
+    - intent: ask_parking_intent
+    - action: utter_parking
+
+- rule: Provide insurance information
+  steps:
+    - intent: ask_insurance_intent
+    - action: utter_insurance
+
+- rule: Provide working hours
+  steps:
+    - intent: ask_working_hours_intent
+    - action: utter_working_hours
+
+- rule: Provide clinic location
+  steps:
+    - intent: ask_location_intent
+    - action: utter_location
+
+- rule: Provide available services
+  steps:
+    - intent: ask_services_intent
+    - action: utter_services
+
+- rule: List all doctors
+  steps:
+    - intent: list_doctors
+    - action: action_list_doctors

@@ -1,27 +1,7 @@
 version: "3.1"
 
 stories:
-  - story: Ask for working hours
-    steps:
-      - intent: ask_working_hours_intent
-      - action: utter_working_hours
-
-  - story: Ask for location
-    steps:
-      - intent: ask_location_intent
-      - action: utter_location
-
-  - story: Ask about services
-    steps:
-      - intent: ask_services_intent
-      - action: utter_services
-
   - story: Fetch users from database
     steps:
       - intent: fetch_users
       - action: action_fetch_users
-
-  - story: List all doctors
-    steps:
-      - intent: list_doctors
-      - action: action_list_doctors
