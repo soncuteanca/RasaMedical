@@ -17,8 +17,10 @@ intents:
   - affirm
   - ask_doctors_by_specialty
   - emergency_intent
-  - fetch_users
   - nlu_fallback
+  - list_procedures
+  - list_tests
+  - list_prices
 
 entities:
   - specialty
@@ -78,7 +80,9 @@ actions:
   - action_greet_user
   - action_list_doctors
   - action_list_doctors_by_specialty
-  - action_fetch_users
+  - action_list_procedures
+  - action_list_tests
+  - action_list_prices
 
 session_config:
   session_expiration_time: 60

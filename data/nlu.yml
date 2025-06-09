@@ -153,3 +153,49 @@ nlu:
       - I feel like fainting
       - I think I'm having a stroke
       - Emergency
+
+  # Add these intents to your data/nlu.yml file
+
+  - intent: list_procedures
+    examples: |
+      - What procedures do you offer?
+      - Show me all procedures
+      - List of procedures
+      - What procedures are available?
+      - Tell me about your procedures
+      - What treatments do you do?
+      - Show procedures
+      - List procedures
+      - What cardiac procedures do you perform?
+      - Available procedures
+      - Medical procedures
+
+  - intent: list_tests
+    examples: |
+      - What blood tests do you do?
+      - Show me available tests
+      - List of blood tests
+      - What tests do you offer?
+      - Tell me about cardiac tests
+      - Blood work available
+      - Show tests
+      - List tests
+      - What analyses do you perform?
+      - Available blood tests
+      - Cardiac blood tests
+
+  - intent: list_prices
+    examples: |
+      - What are your prices?
+      - Show me price list
+      - How much do procedures cost?
+      - Pricing information
+      - Cost of procedures
+      - Price list
+      - Show prices
+      - What do you charge?
+      - Fee schedule
+      - Costs
+      - Pricing
+      - How much does it cost?
+      - What are your fees?

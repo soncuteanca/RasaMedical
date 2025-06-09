@@ -52,3 +52,25 @@ stories:
         - entity: specialty
           value: "Pediatric"
       - action: action_list_doctors_by_specialty
+
+  - story: User asks for procedure list
+    steps:
+      - intent: list_procedures
+      - action: action_list_procedures
+
+  - story: User asks for test list
+    steps:
+      - intent: list_tests
+      - action: action_list_tests
+
+  - story: User asks for price list
+    steps:
+      - intent: list_prices
+      - action: action_list_prices
+
+  - story: User asks about services then wants procedures
+    steps:
+      - intent: ask_services_intent
+      - action: utter_services
+      - intent: list_procedures
+      - action: action_list_procedures
