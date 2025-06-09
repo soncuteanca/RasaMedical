@@ -3,34 +3,6 @@ from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 from actions.db_connect import db_manager
 
-class ActionFetchUsers(Action):
-    def name(self) -> Text:
-        return "action_fetch_users"
-
-    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        try:
-            query = """
-                SELECT id, name, surname, age, medical_history 
-                FROM users 
-                ORDER BY name
-            """
-            results = db_manager.execute_query(query)
-            
-            if results:
-                response = "Here are the registered patients:\n"
-                for row in results:
-                    response += f"• {row['name']} {row['surname']} (Age: {row['age']})\n"
-                    if row['medical_history']:
-                        response += f"  Medical History: {row['medical_history']}\n"
-            else:
-                response = "No patients found in the database."
-            
-            dispatcher.utter_message(text=response)
-        except Exception as e:
-            dispatcher.utter_message(text=f"Sorry, I encountered an error while fetching patient information: {str(e)}")
-        
-        return []
-
 class ActionAddPatient(Action):
     def name(self) -> Text:
         return "action_add_patient"

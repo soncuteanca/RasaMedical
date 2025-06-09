@@ -153,9 +153,3 @@ nlu:
       - I feel like fainting
       - I think I'm having a stroke
       - Emergency
-
-  - intent: fetch_users
-    examples: |
-      - Fetch users
-      - Show me the user list
-      - Get users from database
