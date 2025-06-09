@@ -3,45 +3,129 @@ version: "3.1"
 nlu:
   - intent: greet_intent
     examples: |
-      - hey
       - hello
       - hi
+      - hey
+      - good day
+      - greetings
+      - hello there
+      - hi there
+      - hey there
+      - good morning
+      - good afternoon
+      - howdy
+      - what's up
+      - yo
+      - hey bot
+      - hi again
+
 
   - intent: goodbye_intent
     examples: |
       - bye
       - goodbye
       - see you later
+      - talk to you soon
+      - take care
+      - catch you later
+      - see ya
+      - later
+      - I'm leaving
+      - I'm done
+      - thanks, bye
+      - bye now
+      - that's all
+      - peace out
+      - adios
+
 
   - intent: bot_challenge_intent
     examples: |
+      - Are you a bot?
+      - Is this automated?
+      - Who am I talking to?
+      - Are you real?
+      - Is this a chatbot?
       - What are you?
-      - What is your purpose?
-      - Am I talking to a bot?
+      - What is your function?
+      - Are you a human?
+      - You're not real, right?
+      - Am I chatting with a person?
+      - Are you an AI?
+      - What can you do?
+      - What’s your job?
+      - Are you just a program?
+
 
   - intent: get_started_intent
     examples: |
       - Let's get started
+      - Start now
+      - Begin
+      - I want to begin
+      - Let's begin the chat
       - Start the conversation
-      - Begin the chat
+      - I’m ready
+      - I want to start
+      - Can we start?
+      - Begin now
+      - Let’s talk
+      - I'm ready to chat
+      - Ready when you are
+
 
   - intent: thanks_intent
     examples: |
-      - Thanks
-      - Thanks a lot
-      - Cheers
+      - thanks
+      - thank you
+      - cheers
+      - I appreciate it
+      - thanks a lot
+      - much appreciated
+      - big thanks
+      - thank you so much
+      - thanks again
+      - really grateful
+      - thx
+      - many thanks
+      - appreciate it
+      - grateful
+      - thank you bot
+
 
   - intent: ask_location_intent
     examples: |
-      - What is your address?
-      - Can you tell me your location?
-      - How can I find the clinic?
+      - Where are you located?
+      - What’s your address?
+      - How do I get to the clinic?
+      - Can you send me your location?
+      - Where is the clinic?
+      - What's your GPS location?
+      - Give me the address
+      - What’s the location?
+      - How do I find you?
+      - Where exactly is the clinic?
+      - Clinic address?
+      - Where are you based?
+      - Send me directions
+
 
   - intent: ask_working_hours_intent
     examples: |
       - What are your working hours?
       - When are you open?
       - Are you open on weekends?
+      - What time do you open?
+      - What time do you close?
+      - Are you open today?
+      - Is the clinic open now?
+      - Do you work on Sunday?
+      - What are your business hours?
+      - When can I come?
+      - Clinic schedule?
+      - What’s your timetable?
+      - Are you closed on holidays?
+
 
   - intent: ask_services_intent
     examples: |
@@ -53,58 +137,110 @@ nlu:
 
   - intent: list_doctors
     examples: |
-      - Show me all doctors
-      - List the doctors
-      - Who are the doctors?
-      - Can I see the full doctor list?
-      - Give me the doctor list
-      - Display all available doctors
-      - I'd like to see all your doctors
+          - Show me all doctors
+          - List all available doctors
+          - Who works there?
+          - Can I get the doctor list?
+          - I’d like to see your doctors
+          - Who are the doctors on staff?
+          - Which specialists do you have?
+          - Display the doctor names
+          - Give me all the doctors
+          - I'd like a list of your doctors
+          - What doctors are available?
+          - List the physicians
+          - Can you show all doctors?
+          - Tell me who your doctors are
+          - Available doctors?
+
 
   - intent: ask_contact_intent
     examples: |
-      - What's your phone number?
-      - How can I call you?
-      - What's your contact number?
-      - Can I get your email?
-      - Email
+      - What’s your phone number?
+      - How can I reach you?
+      - Do you have an email address?
+      - What’s the contact info?
+      - I need your phone number
+      - Give me your email
+      - How do I call you?
+      - Contact details?
+      - How can I get in touch?
+      - Provide your contact info
+      - What number can I call?
+      - Where can I contact you?
+      - Phone or email?
+      - Your contact info please
       - Phone
-      - Call
-      - Contact info
-      - Give me your number
-      - Tell me your email
+      - Emil
+      - Mail
+
 
   - intent: ask_parking_intent
     examples: |
-      - Is parking available?
+      - Do you have parking?
+      - Is parking free?
       - Where can I park?
-      - Do you have parking spaces?
-      - Is there free parking?
+      - Is there a parking lot?
+      - Do patients get parking?
+      - Can I park at the clinic?
+      - Any parking spaces available?
+      - Is there a garage nearby?
+      - Where’s the parking area?
+      - Paid or free parking?
+      - How's the parking situation?
+      - Can I leave my car there?
+
 
   - intent: ask_insurance_intent
     examples: |
       - Do you accept insurance?
-      - What insurance do you take?
-      - Can I use my health insurance?
-      - Which insurance plans do you accept?
+      - What insurance plans do you take?
+      - Can I use my insurance?
+      - Is insurance accepted?
+      - Which insurers do you work with?
+      - Will my health insurance work?
+      - Can I pay with insurance?
+      - What types of insurance do you support?
+      - List of insurance providers accepted?
+      - Are you in-network?
+      - Can I use my card?
+      - Is private insurance ok?
+      - Do you take health insurance?
       - Insurance
 
   - intent: report_symptom_intent
     examples: |
-      - I have chest pain
-      - I'm feeling dizzy
-      - My heart is beating fast
-      - I feel pressure in my chest
-      - I feel lightheaded
-      - My legs are swollen
+      - I feel short of breath
+      - I’m dizzy
+      - My chest hurts
+      - I have palpitations
+      - My legs feel heavy
+      - There’s pain in my chest
+      - I feel faint
+      - I get tired very fast
+      - My heart races
+      - I'm feeling weak
+      - Swollen ankles
+      - My chest feels tight
+      - I'm nauseous and dizzy
+
 
   - intent: affirm
     examples: |
       - Yes
-      - Sure
+      - Of course
       - Please do
-      - Ok
-      - That sounds good
+      - Okay
+      - Go ahead
+      - That’s fine
+      - Sure
+      - Definitely
+      - Yep
+      - Absolutely
+      - I agree
+      - Sounds good
+      - That works
+      - Let’s do it
 
   - intent: ask_doctors_by_specialty
     examples: |
@@ -146,15 +282,20 @@ nlu:
 
   - intent: emergency_intent
     examples: |
-      - I'm having a heart attack
-      - I can't breathe
-      - My chest hurts badly
-      - Severe chest pain
-      - I feel like fainting
-      - I think I'm having a stroke
+      - I think I’m having a heart attack
+      - I can’t breathe properly
+      - My chest hurts a lot
+      - This is urgent
+      - I feel like I might pass out
+      - I need emergency help
+      - Call an ambulance
+      - I have stabbing chest pain
+      - I’m shaking and sweating
+      - My vision is blurry
+      - I’m in pain
+      - Please help, it’s an emergency
       - Emergency
-
-  # Add these intents to your data/nlu.yml file
+      - Help
 
   - intent: list_procedures
     examples: |
@@ -169,6 +310,15 @@ nlu:
       - What cardiac procedures do you perform?
       - Available procedures
       - Medical procedures
+      - What kind of procedures do you perform?
+      - Tell me about heart procedures
+      - Which surgeries do you do?
+      - Do you do bypass surgery?
+      - Do you have catheterization?
+      - Procedures available?
+      - Cardiovascular procedures?
+      - Do you offer stress tests?
+
 
   - intent: list_tests
     examples: |
@@ -183,6 +333,16 @@ nlu:
       - What analyses do you perform?
       - Available blood tests
       - Cardiac blood tests
+      - What lab tests can I do?
+      - Do you check cholesterol?
+      - Blood tests you offer?
+      - Can I do a heart test?
+      - What heart tests do you run?
+      - I need a cardiac panel
+      - Can I get tested?
+      - Echocardiogram available?
+      - What analyses are available?
+
 
   - intent: list_prices
     examples: |
@@ -199,3 +359,12 @@ nlu:
       - Pricing
       - How much does it cost?
       - What are your fees?
+      - How much do you charge?
+      - What’s the price for a checkup?
+      - Give me the cost list
+      - Show me all fees
+      - What’s your rate for consultations?
+      - Do you have a price chart?
+      - What are your surgery fees?
+      - Price for an ECG?
+      - How much is a test?
