@@ -25,16 +25,16 @@ class ActionListDoctors(Action):
                         current_specialty = doctor['specialty']
                         if len(response_lines) > 0:
                             response_lines.append("")
-                        response_lines.append(f"**{current_specialty}:**")
+                        response_lines.append(f"{current_specialty}:")
                     response_lines.append(f"• {doctor['name']}")
                 response = "\n".join(response_lines).strip()
             else:
-                response = "**No doctors found in the database.**"
+                response = "No doctors found in the database."
 
             dispatcher.utter_message(text=response)
 
         except Exception as e:
-            dispatcher.utter_message(text=f"**Sorry, I encountered an error while fetching doctors:** {str(e)}")
+            dispatcher.utter_message(text=f"Sorry, I encountered an error while fetching doctors: {str(e)}")
 
         return []
 
@@ -142,27 +142,30 @@ class ActionListProcedures(Action):
         return "action_list_procedures"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        response = """🏥 CARDIOLOGY PROCEDURES
-
-📋 Consultation & Control
+        response = """📋 Consultation & Control
 • Initial Consultation - comprehensive cardiac evaluation
 • Follow-up Visit - monitoring and treatment adjustment
 • Control Visit - routine check-up
+
+
 🩺 Diagnostic Procedures
 • ECG/EKG - measures electrical activity of the heart
-• Echocardiogram - ultrasound of the heart
+• Echocardiogram - ultrasound imaging of the heart
 • Stress Test - evaluates heart function under stress
-• Holter Monitor - 24–48h portable ECG
-• Cardiac MRI - detailed heart imaging
-• CT Coronary Angiogram - checks for blocked arteries
-• Coronary Angiography - catheter-based X-ray
+• Nuclear Stress Test - advanced stress imaging
+• Holter Monitor - continuous heart rhythm monitoring
+• Cardiac MRI - detailed heart structure imaging
+• CT Coronary Angiogram - non-invasive artery imaging
+• Coronary Angiography - detailed artery examination
+
+
 🛠️ Interventional Procedures
 • Coronary Angioplasty (PCI) - opens blocked arteries
-• Stent Placement - keeps artery open
-• Pacemaker Implantation - controls heart rhythms
-• ICD Implantation - treats arrhythmias
-• Catheter Ablation - destroys abnormal rhythm areas
-• Valve Replacement - treats damaged heart valves
+• Stent Placement - keeps arteries open
+• Pacemaker Implantation - regulates heart rhythm
+• ICD Implantation - prevents sudden cardiac arrest
+• Catheter Ablation - treats abnormal heart rhythms
+• Valve Replacement - repairs or replaces heart valves
 • CABG Surgery - creates alternate blood flow path
 
 For additional details you can reach us at:
@@ -184,19 +187,23 @@ class ActionListTests(Action):
 • Troponin I/T - heart muscle injury test
 • CK-MB - myocardial infarction marker
 • BNP/NT-proBNP - heart failure indicator
+
 🧪 Cholesterol & Lipid Panel
 • Total Cholesterol - overall cholesterol levels
 • LDL - "bad" cholesterol
 • HDL - "good" cholesterol
 • Triglycerides - blood fat levels
+
 🩸 Inflammation & Risk Markers
 • hs-CRP - inflammation marker
 • Homocysteine - vascular damage indicator
 • Fibrinogen - clotting factor
+
 🧬 Metabolic Tests
 • Glucose - blood sugar levels
 • HbA1c - long-term blood sugar control
 • Insulin - blood sugar hormone
+
 🧫 Other Tests
 • Electrolytes - heart rhythm function
 • Thyroid panel - affects heart rate
@@ -216,34 +223,37 @@ class ActionListPrices(Action):
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         response = """💰 CARDIOLOGY PRICING LIST
-
+        
 📋 CONSULTATION & CONTROL
-Initial Consultation                          150 - 250 RON
-Follow-up Visit                               120 - 180 RON
-Control Visit                                 100 - 150 RON
+• Initial Consultation   →                     150 - 250 RON
+• Follow-up Visit    →                           120 - 180 RON
+• Control Visit    →                             100 - 150 RON
+
 🩺 DIAGNOSTIC PROCEDURES
-ECG/EKG                                       50 - 100 RON
-Echocardiogram                              300 - 600 RON
-Stress Test                                 400 - 700 RON
-Nuclear Stress Test                         800 - 1.200 RON
-Holter Monitor (24-48h)                     250 - 450 RON
-Cardiac MRI                               1.500 - 2.500 RON
-CT Coronary Angiogram                       800 - 1.500 RON
-Coronary Angiography                      3.000 - 6.000 RON
+• ECG/EKG                  →                     50 - 100 RON
+• Echocardiogram            →                  300 - 600 RON
+• Stress Test                  →               400 - 700 RON
+• Nuclear Stress Test          →               800 - 1.200 RON
+• Holter Monitor (24-48h)      →               250 - 450 RON
+• Cardiac MRI                 →              1.500 - 2.500 RON
+• CT Coronary Angiogram        →               800 - 1.500 RON
+• Coronary Angiography         →             3.000 - 6.000 RON
+
 🛠️ INTERVENTIONAL PROCEDURES
-Coronary Angioplasty (PCI)                8.000 - 15.000 RON
-Stent Placement                          10.000 - 20.000 RON
-Pacemaker Implantation                   15.000 - 25.000 RON
-ICD Implantation                         25.000 - 40.000 RON
-Catheter Ablation                        12.000 - 20.000 RON
-Valve Replacement                        30.000 - 60.000 RON
-CABG Surgery                             25.000 - 50.000 RON
+• Coronary Angioplasty (PCI)     →           8.000 - 15.000 RON
+• Stent Placement      →                    10.000 - 20.000 RON
+• Pacemaker Implantation   →                15.000 - 25.000 RON
+• ICD Implantation          →               25.000 - 40.000 RON
+• Catheter Ablation           →             12.000 - 20.000 RON
+• Valve Replacement           →             30.000 - 60.000 RON
+• CABG Surgery                →             25.000 - 50.000 RON
+
 🔬 BLOOD TESTS
-Basic Cardiac Panel                          80 - 150 RON
-Comprehensive Lipid Panel                    60 - 120 RON
-Troponin Test                               40 - 80 RON
-BNP/NT-proBNP                               80 - 150 RON
-Complete Metabolic Panel                     50 - 100 RON
+• Basic Cardiac Panel            →              80 - 150 RON
+• Comprehensive Lipid Panel      →              60 - 120 RON
+• Troponin Test                  →             40 - 80 RON
+• BNP/NT-proBNP                 →              80 - 150 RON
+• Complete Metabolic Panel      →               50 - 100 RON
 
 For additional details you can reach us at:
 📞 Phone: +1 (555) 123-4567

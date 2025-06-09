@@ -53,7 +53,7 @@ responses:
     - text: "Yes, we have free parking available for all patients. Our parking lot is located directly in front of the clinic building."
 
   utter_insurance:
-    - text: "We accept most major insurance plans including Medicare, Medicaid, Blue Cross Blue Shield, Aetna, and Cigna. Please call us to verify your specific plan."
+    - text: "We accept most major insurance plans including. Please call us to verify your specific plan."
 
   utter_working_hours:
     - text: "Our clinic hours are:\n🕐 Monday - Friday: 8:00 AM - 6:00 PM\n🕐 Saturday: 9:00 AM - 2:00 PM\n🕐 Sunday: Closed"
