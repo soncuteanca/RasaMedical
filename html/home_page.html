@@ -18,7 +18,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
+            padding: 20px 40px;
             position: fixed;
             width: 100%;
             top: 0;
@@ -27,7 +27,7 @@
         }
 
         .title {
-            font-size: 22px;
+            font-size: 32px;
             margin: 0;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -39,22 +39,22 @@
         .button-container {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 15px;
             flex-wrap: wrap;
         }
 
         .button {
-            min-width: 90px;
-            border-radius: 10px;
-            font-size: 15px;
-            padding: 7px 18px;
+            min-width: 120px;
+            border-radius: 12px;
+            font-size: 18px;
+            padding: 12px 24px;
             cursor: pointer;
             text-decoration: none;
             transition: background 0.2s, color 0.2s, box-shadow 0.2s;
             margin: 0;
             text-align: center;
             font-weight: bold;
-            border: 2px solid #2b8a28;
+            border: 2px solid #5E1F28;
             box-sizing: border-box;
         }
 
@@ -79,17 +79,21 @@
             border-color: #B3A09A;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+            }
             .title {
-                font-size: 16px;
+                font-size: 24px;
             }
             .button {
-                min-width: 70px;
-                font-size: 13px;
-                padding: 5px 0;
+                min-width: 100px;
+                font-size: 16px;
+                padding: 10px 20px;
             }
-            header {
-                padding: 6px 6px;
+            .menu-item {
+                font-size: 16px;
+                margin-right: 20px;
             }
         }
 
@@ -99,9 +103,9 @@
             position: fixed;
             top: 0;
             left: 0;
-            background-color: #B3A09A; /* classic greige */
+            background-color: #B3A09A;
             padding: 20px 0 0 0;
-            padding-top: 60px;
+            padding-top: 90px;
             overflow-y: auto;
         }
 
@@ -111,20 +115,20 @@
             color: #2C2C2C;
             font-size: 18px;
             font-weight: bold;
-            padding: 10px;
+            padding: 15px;
             margin: 10px 20px;
-            border-radius: 6px;
+            border-radius: 8px;
             transition: background 0.2s, color 0.2s;
         }
 
         .menu-item:hover, .menu-item.active {
             background: #722F37;
-            color: #FFD6D6;
+            color: #F0EDEA;
         }
 
         main {
             margin-left: 250px;
-            margin-top: 80px;
+            margin-top: 90px;
             padding: 20px;
             background-color: #CFC3BD;
         }
@@ -140,14 +144,12 @@
         footer {
             background-color: #5E1F28;
             color: #F0EDEA;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            text-align: center;
+            padding: 10px 20px;
             position: fixed;
             bottom: 0;
-            left: 0;
-            right: 0;
+            width: 100%;
+            box-sizing: border-box;
         }
     </style>
 </head>
