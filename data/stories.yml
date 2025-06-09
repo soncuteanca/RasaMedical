@@ -74,3 +74,19 @@ stories:
       - action: utter_services
       - intent: list_procedures
       - action: action_list_procedures
+
+
+  - story: modify appointment
+    steps:
+      - intent: modify_appointment
+      - action: action_modify_appointment
+
+  - story: cancel appointment
+    steps:
+      - intent: cancel_appointment
+      - action: action_cancel_appointment
+
+  - story: view appointments
+    steps:
+      - intent: view_appointments
+      - action: action_view_appointments

@@ -53,7 +53,7 @@ nlu:
       - Am I chatting with a person?
       - Are you an AI?
       - What can you do?
-      - What’s your job?
+      - What's your job?
       - Are you just a program?
 
 
@@ -65,11 +65,11 @@ nlu:
       - I want to begin
       - Let's begin the chat
       - Start the conversation
-      - I’m ready
+      - I'm ready
       - I want to start
       - Can we start?
       - Begin now
-      - Let’s talk
+      - Let's talk
       - I'm ready to chat
       - Ready when you are
 
@@ -96,13 +96,13 @@ nlu:
   - intent: ask_location_intent
     examples: |
       - Where are you located?
-      - What’s your address?
+      - What's your address?
       - How do I get to the clinic?
       - Can you send me your location?
       - Where is the clinic?
       - What's your GPS location?
       - Give me the address
-      - What’s the location?
+      - What's the location?
       - How do I find you?
       - Where exactly is the clinic?
       - Clinic address?
@@ -123,7 +123,7 @@ nlu:
       - What are your business hours?
       - When can I come?
       - Clinic schedule?
-      - What’s your timetable?
+      - What's your timetable?
       - Are you closed on holidays?
 
 
@@ -141,7 +141,7 @@ nlu:
           - List all available doctors
           - Who works there?
           - Can I get the doctor list?
-          - I’d like to see your doctors
+          - I'd like to see your doctors
           - Who are the doctors on staff?
           - Which specialists do you have?
           - Display the doctor names
@@ -156,10 +156,10 @@ nlu:
 
   - intent: ask_contact_intent
     examples: |
-      - What’s your phone number?
+      - What's your phone number?
       - How can I reach you?
       - Do you have an email address?
-      - What’s the contact info?
+      - What's the contact info?
       - I need your phone number
       - Give me your email
       - How do I call you?
@@ -185,7 +185,7 @@ nlu:
       - Can I park at the clinic?
       - Any parking spaces available?
       - Is there a garage nearby?
-      - Where’s the parking area?
+      - Where's the parking area?
       - Paid or free parking?
       - How's the parking situation?
       - Can I leave my car there?
@@ -211,11 +211,11 @@ nlu:
   - intent: report_symptom_intent
     examples: |
       - I feel short of breath
-      - I’m dizzy
+      - I'm dizzy
       - My chest hurts
       - I have palpitations
       - My legs feel heavy
-      - There’s pain in my chest
+      - There's pain in my chest
       - I feel faint
       - I get tired very fast
       - My heart races
@@ -232,7 +232,7 @@ nlu:
       - Please do
       - Okay
       - Go ahead
-      - That’s fine
+      - That's fine
       - Sure
       - Definitely
       - Yep
@@ -240,7 +240,7 @@ nlu:
       - I agree
       - Sounds good
       - That works
-      - Let’s do it
+      - Let's do it
 
   - intent: ask_doctors_by_specialty
     examples: |
@@ -282,18 +282,18 @@ nlu:
 
   - intent: emergency_intent
     examples: |
-      - I think I’m having a heart attack
-      - I can’t breathe properly
+      - I think I'm having a heart attack
+      - I can't breathe properly
       - My chest hurts a lot
       - This is urgent
       - I feel like I might pass out
       - I need emergency help
       - Call an ambulance
       - I have stabbing chest pain
-      - I’m shaking and sweating
+      - I'm shaking and sweating
       - My vision is blurry
-      - I’m in pain
-      - Please help, it’s an emergency
+      - I'm in pain
+      - Please help, it's an emergency
       - Emergency
       - Help
 
@@ -360,11 +360,104 @@ nlu:
       - How much does it cost?
       - What are your fees?
       - How much do you charge?
-      - What’s the price for a checkup?
+      - What's the price for a checkup?
       - Give me the cost list
       - Show me all fees
-      - What’s your rate for consultations?
+      - What's your rate for consultations?
       - Do you have a price chart?
       - What are your surgery fees?
       - Price for an ECG?
       - How much is a test?
+
+  - intent: book_appointment
+    examples: |
+      - I want to book an appointment
+      - Book me an appointment
+      - Schedule an appointment
+      - I need to see a doctor
+      - Make an appointment
+      - I'd like to schedule a visit
+      - Can I book a consultation?
+      - I want to see a doctor
+      - Need to make an appointment
+      - Book me for [tomorrow](date)
+      - Schedule me for [Friday](date)
+      - I want to see [Dr. Smith](doctor_name)
+      - Book me with [Dr. Johnson](doctor_name)
+      - I need an appointment at [2pm](time)
+      - Schedule me for [4:00](time)
+      - I have [chest pain](reason)
+      - I'm experiencing [heart issues](reason)
+      - [Tomorrow](date) at [3pm](time)
+      - [Friday](date) with [Dr. Smith](doctor_name)
+      - [Chest pain](reason) on [Monday](date)
+      - [Heart issues](reason) at [2pm](time)
+
+  - intent: modify_appointment
+    examples: |
+      - Change my appointment time to [4 PM](time)
+      - Reschedule my appointment
+      - Move my appointment with [Dr. Miller](doctor_name)
+
+  - intent: cancel_appointment
+    examples: |
+      - Cancel my appointment
+      - I want to cancel my appointment
+      - Remove my booking with [Dr. Smith](doctor_name)
+
+  - intent: view_appointments
+    examples: |
+      - Show my appointments
+      - What appointments do I have?
+      - List my upcoming appointments
+      - Do I have any appointments on [Friday](date)?
+
+  - intent: provide_date
+    examples: |
+      - [tomorrow](date)
+      - [Friday](date)
+      - [Monday](date)
+      - [next week](date)
+      - [June 15th](date)
+      - [15th of June](date)
+      - [next Monday](date)
+      - [this Friday](date)
+      - [today](date)
+      - [next month](date)
+
+  - intent: provide_time
+    examples: |
+      - [2pm](time)
+      - [2:30pm](time)
+      - [14:30](time)
+      - [4](time)
+      - [4:00](time)
+      - [9am](time)
+      - [9:00am](time)
+      - [morning](time)
+      - [afternoon](time)
+      - [evening](time)
+
+  - intent: provide_doctor
+    examples: |
+      - [Dr. Smith](doctor_name)
+      - [Dr. Johnson](doctor_name)
+      - [Doctor Smith](doctor_name)
+      - [Smith](doctor_name)
+      - [Johnson](doctor_name)
+      - [Dr. Sarah Johnson](doctor_name)
+      - [Doctor Sarah](doctor_name)
+      - [Sarah](doctor_name)
+
+  - intent: provide_reason
+    examples: |
+      - [chest pain](reason)
+      - [heart issues](reason)
+      - [check up](reason)
+      - [regular checkup](reason)
+      - [follow up](reason)
+      - [follow-up](reason)
+      - [consultation](reason)
+      - [pain](reason)
+      - [heart](reason)
+      - [check](reason)

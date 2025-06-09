@@ -77,3 +77,49 @@ rules:
     steps:
       - intent: affirm
       - action: utter_list_specialists
+
+  - rule: Activate appointment form when needed
+    steps:
+      - intent: book_appointment
+      - action: appointment_form
+      - active_loop: appointment_form
+
+  - rule: Submit appointment form
+    condition:
+      - active_loop: appointment_form
+    steps:
+      - action: appointment_form
+      - active_loop: null
+      - action: action_submit_appointment_form
+
+  - rule: Handle provide_date during form
+    condition:
+      - active_loop: appointment_form
+    steps:
+      - intent: provide_date
+      - action: appointment_form
+      - active_loop: appointment_form
+
+  - rule: Handle provide_time during form
+    condition:
+      - active_loop: appointment_form
+    steps:
+      - intent: provide_time
+      - action: appointment_form
+      - active_loop: appointment_form
+
+  - rule: Handle provide_doctor during form
+    condition:
+      - active_loop: appointment_form
+    steps:
+      - intent: provide_doctor
+      - action: appointment_form
+      - active_loop: appointment_form
+
+  - rule: Handle provide_reason during form
+    condition:
+      - active_loop: appointment_form
+    steps:
+      - intent: provide_reason
+      - action: appointment_form
+      - active_loop: appointment_form
