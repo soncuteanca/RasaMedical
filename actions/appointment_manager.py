@@ -8,6 +8,7 @@ class AppointmentManager:
     def __init__(self):
         self.appointments = {}
         self.next_id = 1
+        self.known_doctors = ["Smith", "Johnson", "Williams", "Brown", "Jones"]
 
     def handle_rasa_intent(self, rasa_data: Dict[str, Any]) -> Dict[str, Any]:
         """Handle Rasa-parsed appointment intent"""
@@ -46,74 +47,104 @@ class AppointmentManager:
 
         return slots
 
-    def _normalize_doctor_name(self, name: str) -> str:
-        """Normalize doctor name to ensure consistent format with Dr. prefix"""
-        if not name:
-            return ""
-            
-        # Remove any existing Dr. or Doctor prefix
-        name = re.sub(r'^(dr\.?|doctor)\s+', '', str(name).strip(), flags=re.IGNORECASE)
+    def _normalize_doctor_name(self, doctor_input: str) -> str:
+        """Normalize doctor name with validation"""
+        if not doctor_input:
+            return None
+
+        # Remove any existing prefix
+        doctor_name = re.sub(r'^(dr\.?|doctor)\s+', '', doctor_input.strip(), flags=re.IGNORECASE)
         
-        # Add Dr. prefix if not present
-        if not name.lower().startswith('dr.'):
-            name = f"Dr. {name}"
+        # Validate against known doctors
+        if doctor_name.title() not in self.known_doctors:
+            raise ValueError(f"Unknown doctor: {doctor_name}")
+        
+        # Add Dr. prefix
+        return f"Dr. {doctor_name.title()}"
+
+    def _normalize_reason(self, reason: str) -> str:
+        """Normalize and validate reason for visit"""
+        if not reason:
+            return "General"
             
-        return name
+        reason = str(reason).strip()
+        if len(reason) < 3:  # Too short to be meaningful
+            return "General"
+            
+        return reason
 
     def create_appointment(self, slots: Dict[str, Any]) -> Dict[str, Any]:
-        """Create appointment from Rasa slots - now more flexible"""
+        """Create appointment from slots with validation"""
+        try:
+            # Check if we have all required information
+            required_slots = ["date", "time", "doctor_name"]
+            missing_slots = [slot for slot in required_slots if not slots.get(slot)]
+            
+            if missing_slots:
+                return {
+                    "success": False,
+                    "message": f"Missing required information: {', '.join(missing_slots)}",
+                    "missing_slots": missing_slots
+                }
 
-        # Check if we have minimum required information
-        if not slots.get("date") or not slots.get("time"):
-            # Return info about missing slots for form handling
-            missing_slots = []
-            if not slots.get("date"):
-                missing_slots.append("date")
-            if not slots.get("time"):
-                missing_slots.append("time")
-            if not slots.get("doctor_name"):
-                missing_slots.append("doctor_name")
-            if not slots.get("reason"):
-                missing_slots.append("reason")
+            # Normalize all inputs
+            normalized_date = self._normalize_date(slots.get("date"))
+            normalized_time = self._normalize_time(slots.get("time"))
+            normalized_doctor = self._normalize_doctor_name(slots.get("doctor_name"))
+            
+            # Enhanced reason validation
+            reason = slots.get("reason", "").strip()
+            if not reason or len(reason) < 3:
+                return {
+                    "success": False,
+                    "message": "Please provide a reason for your visit (at least 3 characters)",
+                    "missing_slots": ["reason"]
+                }
+            
+            # Check for invalid reason inputs
+            invalid_inputs = [".", ",", "?", "!", "...", ".."]
+            if reason in invalid_inputs or reason.replace(".", "").strip() == "":
+                return {
+                    "success": False,
+                    "message": "Please provide a meaningful reason for your visit",
+                    "missing_slots": ["reason"]
+                }
+
+            # Create appointment
+            appointment = {
+                "id": self.next_id,
+                "date": normalized_date,
+                "time": normalized_time,
+                "doctor": normalized_doctor,
+                "reason": reason,
+                "status": "scheduled",
+                "created_at": datetime.now().isoformat()
+            }
+
+            # Store appointment
+            self.appointments[self.next_id] = appointment
+            appointment_id = self.next_id
+            self.next_id += 1
+
+            # Format confirmation message
+            message = (
+                f"✅ Appointment confirmed!\n"
+                f"📅 {appointment['date']} at {appointment['time']}\n"
+                f"👨‍⚕️ {appointment['doctor']}\n"
+                f"📝 Reason: {appointment['reason'].capitalize()}"
+            )
 
             return {
+                "success": True,
+                "appointment": appointment,
+                "message": message
+            }
+
+        except Exception as e:
+            return {
                 "success": False,
-                "missing_slots": missing_slots,
-                "message": f"I need more information. Please provide: {', '.join(missing_slots)}",
-                "action": "activate_form"
+                "message": f"Error creating appointment: {str(e)}"
             }
-
-        appointment = {
-            "id": self.next_id,
-            "title": slots.get("reason") or slots.get("appointment_type") or "Medical Appointment",
-            "date": self._normalize_date(slots["date"]),
-            "time": self._normalize_time(slots["time"]),
-            "duration": slots.get("duration", "30 minutes"),
-            "doctor": self._normalize_doctor_name(slots.get("doctor_name") or slots.get("provider")),
-            "patient": slots.get("patient_name"),
-            "reason": slots.get("reason"),
-            "location": slots.get("location") or slots.get("clinic"),
-            "phone": slots.get("phone_number"),
-            "status": "scheduled",
-            "metadata": {
-                "confidence": slots.get("confidence", 1.0),
-                "rasa_session_id": slots.get("session_id"),
-                "created_at": datetime.now().isoformat(),
-                "updated_at": datetime.now().isoformat()
-            }
-        }
-
-        # Update memory
-        self.appointments[self.next_id] = appointment
-        appointment_id = self.next_id
-        self.next_id += 1
-
-        return {
-            "success": True,
-            "appointment": appointment,
-            "message": f"✅ Appointment booked!\n📅 Date: {appointment['date']}\n🕐 Time: {appointment['time']}\n👨‍⚕️ Doctor: {appointment['doctor']}\n📝 Reason: {appointment['reason'] or 'General'}",
-            "db_string": self._serialize_for_database(appointment)
-        }
 
     def create_appointment_from_slots(self, tracker_slots: Dict[str, Any]) -> Dict[str, Any]:
         """Create appointment using all slots from tracker (for form completion)"""
@@ -232,82 +263,102 @@ class AppointmentManager:
 
         return json.dumps(db_data)
 
-    def _normalize_date(self, date_input: str) -> Optional[str]:
-        """Normalize date from various formats to YYYY-MM-DD"""
+    def _normalize_date(self, date_input: str) -> str:
+        """Normalize date to YYYY-MM-DD format"""
         if not date_input:
             return None
 
+        date_lower = date_input.lower().strip()
         today = datetime.now().date()
-        tomorrow = today + timedelta(days=1)
-
-        date_lower = date_input.lower()
-
+        
+        # Handle relative dates
         if date_lower == "today":
             return today.isoformat()
         elif date_lower == "tomorrow":
-            return tomorrow.isoformat()
-        elif "next week" in date_lower:
-            next_week = today + timedelta(weeks=1)
-            return next_week.isoformat()
-        elif "monday" in date_lower:
-            # Find next Monday
-            days_ahead = 0 - today.weekday()
-            if days_ahead <= 0:  # Target day already happened this week
+            return (today + timedelta(days=1)).isoformat()
+        
+        # Handle weekday names
+        weekdays = {
+            "monday": 0, "tuesday": 1, "wednesday": 2,
+            "thursday": 3, "friday": 4, "saturday": 5, "sunday": 6
+        }
+        
+        if date_lower in weekdays:
+            days_ahead = weekdays[date_lower] - today.weekday()
+            if days_ahead <= 0:
                 days_ahead += 7
-            next_monday = today + timedelta(days_ahead)
-            return next_monday.isoformat()
-        else:
-            try:
-                # Try to parse various date formats
-                for fmt in ["%Y-%m-%d", "%m/%d/%Y", "%B %d", "%B %dth", "%B %dst", "%B %dnd", "%B %drd"]:
-                    try:
-                        parsed_date = datetime.strptime(date_input, fmt).date()
-                        if parsed_date.year == 1900:  # No year provided, use current year
-                            parsed_date = parsed_date.replace(year=today.year)
-                        return parsed_date.isoformat()
-                    except ValueError:
-                        continue
-                return date_input  # Return as-is if can't parse
-            except:
-                return date_input
+            return (today + timedelta(days=days_ahead)).isoformat()
+        
+        # Try parsing as YYYY-MM-DD
+        try:
+            parsed_date = datetime.strptime(date_input, "%Y-%m-%d").date()
+            if parsed_date < today:
+                raise ValueError("Date cannot be in the past")
+            return parsed_date.isoformat()
+        except ValueError:
+            raise ValueError(f"Invalid date format: {date_input}")
 
-    def _normalize_time(self, time_input: str) -> Optional[str]:
-        """Normalize time input to 24-hour format (HH:MM)"""
+    def _normalize_time(self, time_input: str) -> str:
+        """Normalize time to HH:MM format"""
         if not time_input:
             return None
 
-        time_input = str(time_input).lower().strip()
+        time_input = time_input.strip().lower()
         
-        # Try common time formats
-        time_patterns = [
-            # 24-hour format
-            r'^(\d{1,2}):(\d{2})$',  # 14:30
-            r'^(\d{1,2})$',  # 14
-            
-            # 12-hour format
-            r'^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$',  # 2:30pm, 2pm
-            r'^(\d{1,2})(?::(\d{2}))?\s*(a|p)$',  # 2:30p, 2p
-            
-            # Just numbers
-            r'^(\d{1,2})$'  # 2, 14
-        ]
-        
-        for pattern in time_patterns:
-            match = re.match(pattern, time_input)
+        try:
+            # Pattern 1: "3 PM", "3PM", "3 am", "3am"
+            match = re.match(r'^(\d{1,2})\s*(pm|am)?$', time_input)
             if match:
-                hour = int(match.group(1))
-                minute = int(match.group(2)) if match.group(2) else 0
-                ampm = match.group(3) if len(match.groups()) > 2 else None
+                hours = int(match.group(1))
+                period = match.group(2) or "am"  # Default to AM if not specified
                 
-                # Convert to 24-hour format
-                if ampm:
-                    if ampm.startswith('p') and hour < 12:
-                        hour += 12
-                    elif ampm.startswith('a') and hour == 12:
-                        hour = 0
+                if period == "pm" and hours != 12:
+                    hours += 12
+                elif period == "am" and hours == 12:
+                    hours = 0
                 
-                # Validate hour and minute
-                if 0 <= hour <= 23 and 0 <= minute <= 59:
-                    return f"{hour:02d}:{minute:02d}"
-        
-        return None 
+                if not (0 <= hours <= 23):
+                    raise ValueError(f"Invalid hour: {hours}")
+                
+                return f"{hours:02d}:00"
+            
+            # Pattern 2: "3:30 PM", "3:30PM"
+            match = re.match(r'^(\d{1,2}):(\d{2})\s*(pm|am)?$', time_input)
+            if match:
+                hours = int(match.group(1))
+                minutes = int(match.group(2))
+                period = match.group(3) or "am"
+                
+                if period == "pm" and hours != 12:
+                    hours += 12
+                elif period == "am" and hours == 12:
+                    hours = 0
+                
+                if not (0 <= hours <= 23) or not (0 <= minutes <= 59):
+                    raise ValueError(f"Invalid time: {hours}:{minutes}")
+                
+                return f"{hours:02d}:{minutes:02d}"
+            
+            # Pattern 3: "14:30", "16:00"
+            match = re.match(r'^(\d{1,2}):(\d{2})$', time_input)
+            if match:
+                hours = int(match.group(1))
+                minutes = int(match.group(2))
+                
+                if not (0 <= hours <= 23) or not (0 <= minutes <= 59):
+                    raise ValueError(f"Invalid time: {hours}:{minutes}")
+                
+                return f"{hours:02d}:{minutes:02d}"
+            
+            raise ValueError(f"Invalid time format: {time_input}")
+            
+        except Exception as e:
+            raise ValueError(f"Time parsing error: {str(e)}")
+
+    def get_appointment(self, appointment_id: int) -> Dict[str, Any]:
+        """Get appointment by ID"""
+        return self.appointments.get(appointment_id)
+
+    def list_appointments(self) -> List[Dict[str, Any]]:
+        """List all appointments"""
+        return list(self.appointments.values()) 

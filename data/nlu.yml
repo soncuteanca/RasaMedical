@@ -372,26 +372,18 @@ nlu:
   - intent: book_appointment
     examples: |
       - I want to book an appointment
+      - Book an appointment
+      - want to book an appointment with [Dr. Smith](doctor_name) [tomorrow](date) at [2 PM](time) for [chest pain](reason)
+      - I want to book an appointment for [tomorrow](date) at [4 PM](time)  
+      - I want to see [Dr. Smith](doctor_name) [tomorrow](date) at [9](time)
+      - I want to see [Smith](doctor_name) [tomorrow](date) at [9](time)
+      - [Tomorrow](date) at [3 PM](time)
+      - appointment with [Dr. Smith](doctor_name) [tomorrow](date) at [2 PM](time) for [chest pai](reason)
+      - see [Dr. Smith](doctor_name) [tomorrow](date) at [nine](time)
+      - book appointment [today](date) at [4 PM](time)
+      - Schedule appointment
       - Book me an appointment
-      - Schedule an appointment
-      - I need to see a doctor
-      - Make an appointment
-      - I'd like to schedule a visit
-      - Can I book a consultation?
-      - I want to see a doctor
-      - Need to make an appointment
-      - Book me for [tomorrow](date)
-      - Schedule me for [Friday](date)
-      - I want to see [Dr. Smith](doctor_name)
-      - Book me with [Dr. Johnson](doctor_name)
-      - I need an appointment at [2pm](time)
-      - Schedule me for [4:00](time)
-      - I have [chest pain](reason)
-      - I'm experiencing [heart issues](reason)
-      - [Tomorrow](date) at [3pm](time)
-      - [Friday](date) with [Dr. Smith](doctor_name)
-      - [Chest pain](reason) on [Monday](date)
-      - [Heart issues](reason) at [2pm](time)
+      - I need an appointment
 
   - intent: modify_appointment
     examples: |
@@ -415,49 +407,84 @@ nlu:
   - intent: provide_date
     examples: |
       - [tomorrow](date)
+      - [today](date)
       - [Friday](date)
       - [Monday](date)
+      - [Tuesday](date)
       - [next week](date)
-      - [June 15th](date)
-      - [15th of June](date)
-      - [next Monday](date)
-      - [this Friday](date)
-      - [today](date)
-      - [next month](date)
+      - [June 15](date)
+      - [tomorow](date)
+      - [tommorow](date)
+      - [next monday](date)
+      - [next friday](date)
 
   - intent: provide_time
     examples: |
-      - [2pm](time)
-      - [2:30pm](time)
-      - [14:30](time)
-      - [4](time)
-      - [4:00](time)
-      - [9am](time)
-      - [9:00am](time)
-      - [morning](time)
-      - [afternoon](time)
-      - [evening](time)
+      - [2](time)
+      - [9](time)
+      - [3 PM](time)
+      - [4 PM](time)
+      - [2 PM](time)
+      - [16:00](time)
+      - [14:00](time)
+      - [9:30](time)
+      - [2:30 PM](time)
+      - [nine](time)
+      - [two](time)
+      - [four](time)
+      - [15:00](time)
+      - [3:00](time)
 
   - intent: provide_doctor
     examples: |
       - [Dr. Smith](doctor_name)
-      - [Dr. Johnson](doctor_name)
-      - [Doctor Smith](doctor_name)
       - [Smith](doctor_name)
+      - [Dr. Johnson](doctor_name)
       - [Johnson](doctor_name)
-      - [Dr. Sarah Johnson](doctor_name)
-      - [Doctor Sarah](doctor_name)
-      - [Sarah](doctor_name)
+      - [Dr. Brown](doctor_name)
+      - Can I see [Dr. Johnson](doctor_name) instead?
+      - I'd like to see [Dr. Johnson](doctor_name)
+      - Change to [Dr. Johnson](doctor_name)
+      - Switch to [Dr. Johnson](doctor_name)
+      - I want [Dr. Johnson](doctor_name) instead
 
   - intent: provide_reason
     examples: |
       - [chest pain](reason)
-      - [heart issues](reason)
-      - [check up](reason)
-      - [regular checkup](reason)
-      - [follow up](reason)
-      - [follow-up](reason)
-      - [consultation](reason)
+      - [chest pai](reason)
       - [pain](reason)
       - [heart](reason)
-      - [check](reason)
+      - [checkup](reason)
+      - [consultation](reason)
+      - [dizziness](reason)
+      - [diziness](reason)
+      - [dizzy](reason)
+      - [fever](reason)
+      - [high fever](reason)
+      - [temperature](reason)
+      - [pulse](reason)
+      - [high pulse](reason)
+      - [raisepulse](reason)
+      - [rapid pulse](reason)
+      - [fast heartbeat](reason)
+      - [heart rate](reason)
+      - [chest discomfort](reason)
+      - [chest tightness](reason)
+      - [shortness of breath](reason)
+      - [breathing problems](reason)
+      - [fatigue](reason)
+      - [tiredness](reason)
+      - [weakness](reason)
+
+  - intent: ask_doctors
+    examples: |
+      - doctor list
+      - show doctors
+      - list doctors
+      - available doctors
+      - who are the doctors
+      - which doctors are available
+      - show me the doctors
+      - list of doctors
+      - who can I see
+      - who are the cardiologists

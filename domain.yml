@@ -25,6 +25,10 @@ intents:
   - modify_appointment
   - cancel_appointment
   - view_appointments
+  - provide_date
+  - provide_time
+  - provide_doctor
+  - provide_reason
 
 
 entities:
@@ -136,7 +140,7 @@ responses:
     - text: "Which doctor would you like to see?"
 
   utter_ask_reason:
-      - text: "What’s the reason for your visit?"
+      - text: "What's the reason for your visit?"
 
 actions:
   - action_greet_user
