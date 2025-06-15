@@ -16,7 +16,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
+            padding: 20px 40px;
             position: fixed;
             width: 100%;
             top: 0;
@@ -24,7 +24,7 @@
             box-sizing: border-box;
         }
         .title {
-            font-size: 22px;
+            font-size: 32px;
             margin: 0;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -35,14 +35,14 @@
         .button-container {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 15px;
             flex-wrap: wrap;
         }
         .button {
-            min-width: 90px;
-            border-radius: 10px;
-            font-size: 15px;
-            padding: 7px 18px;
+            min-width: 120px;
+            border-radius: 12px;
+            font-size: 18px;
+            padding: 12px 24px;
             cursor: pointer;
             text-decoration: none;
             transition: background 0.2s, color 0.2s, box-shadow 0.2s;
@@ -71,22 +71,22 @@
             color: #5E1F28;
             border-color: #B3A09A;
         }
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+            }
             .title {
-                font-size: 16px;
+                font-size: 24px;
             }
             .button {
-                min-width: 70px;
-                font-size: 13px;
-                padding: 5px 0;
-            }
-            header {
-                padding: 6px 6px;
+                min-width: 100px;
+                font-size: 16px;
+                padding: 10px 20px;
             }
         }
         .container {
             max-width: 900px;
-            margin: 100px auto 40px auto;
+            margin: 120px auto 40px auto;
             background: #B3A09A;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -152,9 +152,15 @@
             color: #5E1F28;
             text-decoration: none;
             font-weight: bold;
+            font-size: 18px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
         }
         .back-link:hover {
-            text-decoration: underline;
+            background-color: #5E1F28;
+            color: #F0EDEA;
+            text-decoration: none;
         }
         .button-delete {
             background-color: #5E1F28;
@@ -173,9 +179,9 @@
             border-color: #4A1F24;
         }
         #deleteModal .modal-content, #successModal .modal-content {
-            background: #fff;
+            background: #B3A09A;
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(114, 47, 55, 0.25);
             text-align: center;
             max-width: 400px;
             border-top: 4px solid #5E1F28;
@@ -239,19 +245,52 @@
             right: 40px;
             bottom: 40px;
         }
+        #authModal .modal-content {
+            background: #B3A09A;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(114, 47, 55, 0.25);
+            text-align: center;
+            max-width: 400px;
+            border-top: 4px solid #5E1F28;
+            padding: 30px 40px;
+        }
+        #authModal h3 {
+            color: #5E1F28;
+            margin-top: 0;
+        }
+        #authModal .modal-icon {
+            font-size: 48px;
+            color: #5E1F28;
+            margin-bottom: 15px;
+        }
+        #authModal .modal-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            background: #5E1F28;
+            color: #F0EDEA;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0 5px;
+            transition: background 0.2s;
+        }
+        #authModal .modal-btn:hover {
+            background: #4A1F24;
+        }
     </style>
 </head>
 <body>
 <header>
     <h1 class="title">Medical Assistant</h1>
     <div class="button-container">
-        <a href="chat_page.html" class="button button-chat">Chat Now!</a>
+        <a href="#" class="button button-chat" onclick="handleChatClick(event)">Chat Now!</a>
         <a href="login.html" class="button button-login" id="loginBtn">Login</a>
         <a href="create_user.html" class="button button-create" id="createAccountBtn">Create Account</a>
         <button class="button button-logout" id="logoutBtn" style="display:none;">Logout</button>
     </div>
 </header>
-<div class="container" style="margin-top: 90px;">
+<div class="container">
     <a href="home_page.html" class="back-link">&larr; Back to Home</a>
     <div class="profile-section">
         <div class="profile-info">
@@ -275,6 +314,18 @@
     </div>
     <div class="section">
         <button id="deleteAccountBtn" class="button button-delete">Delete Account</button>
+    </div>
+</div>
+
+<!-- Authentication Modal -->
+<div id="authModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div class="modal-content">
+        <div class="modal-icon">⚠️</div>
+        <h3>Authentication Required</h3>
+        <p id="authModalMessage" style="font-size:16px; color:#333; margin-bottom:20px;">Please log in to access the chat feature.</p>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button onclick="closeAuthModal()" class="modal-btn">OK</button>
+        </div>
     </div>
 </div>
 
@@ -303,6 +354,47 @@
 </div>
 
 <script>
+// Function to handle Chat Now button click with authentication check
+function handleChatClick(event) {
+    event.preventDefault(); // Prevent default link behavior
+    
+    const token = localStorage.getItem('userToken');
+    const user = localStorage.getItem('user');
+    
+    if (!token || !user) {
+        // User is not logged in, show modal and redirect to login
+        showAuthModal('Please log in to access the chat feature.');
+        return;
+    }
+    
+    try {
+        // Validate that user data is properly formatted
+        const userObj = JSON.parse(user);
+        if (!userObj || !userObj.id || !userObj.name) {
+            throw new Error('Invalid user data');
+        }
+        // User is authenticated, redirect to chat page
+        window.location.href = 'chat_page.html';
+    } catch (error) {
+        // Invalid user data, clear storage and redirect to login
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('user');
+        showAuthModal('Invalid session. Please log in again.');
+    }
+}
+
+// Show authentication modal
+function showAuthModal(message) {
+    document.getElementById('authModalMessage').innerText = message;
+    document.getElementById('authModal').style.display = 'flex';
+}
+
+// Close modal and redirect to login
+function closeAuthModal() {
+    document.getElementById('authModal').style.display = 'none';
+    window.location.href = 'login.html';
+}
+
 // Show Logout if logged in, else show Create Account. Show user name instead of Login if logged in.
 window.addEventListener('DOMContentLoaded', function() {
     const token = localStorage.getItem('userToken');

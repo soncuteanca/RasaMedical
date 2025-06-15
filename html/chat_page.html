@@ -177,9 +177,100 @@
     </div>
 </div>
 
+<!-- Authentication Modal -->
+<div id="authModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:#B3A09A; padding:30px; border-radius:10px; text-align:center; max-width:400px; margin:20px; box-shadow:0 4px 12px rgba(114, 47, 55, 0.25); border-top:4px solid #5E1F28;">
+        <h3 id="modalMessage" style="font-size:18px; color:#5E1F28; margin-bottom:20px;"></h3>
+        <button onclick="closeAuthModal()" style="background-color:#5E1F28; color:#F0EDEA; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold; font-size:16px;">OK</button>
+    </div>
+</div>
+
 <script src="https://cdn.socket.io/4.2.0/socket.io.js"></script>
 
 <script>
+    // Authentication check - redirect to login if not authenticated
+    function checkAuthentication() {
+        const token = localStorage.getItem('userToken');
+        const user = localStorage.getItem('user');
+        
+        if (!token || !user) {
+            // User is not logged in, show modal and redirect to login page
+            showAuthModal('Please log in to access the chat feature.');
+            return false;
+        }
+        
+        try {
+            // Validate that user data is properly formatted
+            const userObj = JSON.parse(user);
+            if (!userObj || !userObj.id || !userObj.name) {
+                throw new Error('Invalid user data');
+            }
+            
+            // Additional server-side validation
+            validateSessionWithServer(userObj.id, token);
+            return true;
+        } catch (error) {
+            // Invalid user data, clear storage and redirect to login
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('user');
+            showAuthModal('Invalid session. Please log in again.');
+            return false;
+        }
+    }
+
+    // Show authentication modal
+    function showAuthModal(message) {
+        document.getElementById('modalMessage').innerText = message;
+        document.getElementById('authModal').style.display = 'flex';
+    }
+
+    // Close modal and redirect to login
+    function closeAuthModal() {
+        document.getElementById('authModal').style.display = 'none';
+        window.location.href = 'login.html';
+    }
+
+    // Validate session with server
+    async function validateSessionWithServer(userId, token) {
+        try {
+            const response = await fetch('http://localhost:5000/api/validate-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    token: token
+                })
+            });
+
+            const result = await response.json();
+            
+            if (!response.ok || !result.valid) {
+                // Session is invalid, clear storage and redirect
+                localStorage.removeItem('userToken');
+                localStorage.removeItem('user');
+                showAuthModal('Your session has expired. Please log in again.');
+                return;
+            }
+            
+            // Session is valid, update user data if needed
+            if (result.user) {
+                localStorage.setItem('user', JSON.stringify(result.user));
+            }
+        } catch (error) {
+            console.error('Error validating session:', error);
+            // On network error, we'll allow the user to continue with local validation
+            // In a production environment, you might want to be more strict
+        }
+    }
+
+    // Check authentication when page loads
+    if (!checkAuthentication()) {
+        // Stop script execution if not authenticated
+        throw new Error('Authentication required');
+    }
+
     const socketUrl = "http://localhost:5005";
     const socket = io.connect(socketUrl, {path: "/socket.io/"});
     const chatBox = document.getElementById('webchat');

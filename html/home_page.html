@@ -157,7 +157,7 @@
 <header>
     <h1 class="title">Medical Assistant</h1>
     <div class="button-container">
-        <a href="chat_page.html" class="button button-chat" id="chatNowBtn">Chat Now!</a>
+        <a href="#" class="button button-chat" id="chatNowBtn" onclick="handleChatClick(event)">Chat Now!</a>
         <span id="userNameDisplay" class="button button-login" style="display:none; cursor:pointer;"></span>
         <a href="login.html" class="button button-login" id="loginBtn">Login</a>
         <a href="create_user.html" class="button button-create" id="createAccountBtn">Create Account</a>
@@ -185,7 +185,56 @@
     <p>&copy; 2025 Medical Assistant. All rights reserved.</p>
 </footer>
 
+<!-- Authentication Modal -->
+<div id="authModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:#B3A09A; padding:30px; border-radius:10px; text-align:center; max-width:400px; margin:20px; box-shadow:0 4px 12px rgba(114, 47, 55, 0.25); border-top:4px solid #5E1F28;">
+        <h3 id="modalMessage" style="font-size:18px; color:#5E1F28; margin-bottom:20px;"></h3>
+        <button onclick="closeAuthModal()" style="background-color:#5E1F28; color:#F0EDEA; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold; font-size:16px;">OK</button>
+    </div>
+</div>
+
 <script>
+// Function to handle Chat Now button click with authentication check
+function handleChatClick(event) {
+    event.preventDefault(); // Prevent default link behavior
+    
+    const token = localStorage.getItem('userToken');
+    const user = localStorage.getItem('user');
+    
+    if (!token || !user) {
+        // User is not logged in, show modal and redirect to login
+        showAuthModal('Please log in to access the chat feature.');
+        return;
+    }
+    
+    try {
+        // Validate that user data is properly formatted
+        const userObj = JSON.parse(user);
+        if (!userObj || !userObj.id || !userObj.name) {
+            throw new Error('Invalid user data');
+        }
+        // User is authenticated, redirect to chat page
+        window.location.href = 'chat_page.html';
+    } catch (error) {
+        // Invalid user data, clear storage and redirect to login
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('user');
+        showAuthModal('Invalid session. Please log in again.');
+    }
+}
+
+// Show authentication modal
+function showAuthModal(message) {
+    document.getElementById('modalMessage').innerText = message;
+    document.getElementById('authModal').style.display = 'flex';
+}
+
+// Close modal and redirect to login
+function closeAuthModal() {
+    document.getElementById('authModal').style.display = 'none';
+    window.location.href = 'login.html';
+}
+
 // Show Logout if logged in, else show Create Account. Show user name instead of Login if logged in.
 window.addEventListener('DOMContentLoaded', function() {
     const token = localStorage.getItem('userToken');
@@ -221,3 +270,4 @@ window.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+

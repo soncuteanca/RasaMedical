@@ -168,6 +168,37 @@ def delete_user(user_id):
         logger.error(f"Error deleting user: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/validate-session', methods=['POST'])
+def validate_session():
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        token = data.get('token')
+        
+        if not user_id or not token:
+            return jsonify({'valid': False, 'error': 'Missing user_id or token'}), 400
+        
+        # For now, we'll do a simple validation by checking if user exists
+        # In a real application, you'd validate the actual token
+        query = "SELECT id, first_name, last_name, email FROM users WHERE id = %s"
+        result = db_manager.execute_query(query, (user_id,))
+        
+        if result:
+            return jsonify({
+                'valid': True,
+                'user': {
+                    'id': result[0]['id'],
+                    'name': f"{result[0]['first_name']} {result[0]['last_name']}",
+                    'email': result[0]['email']
+                }
+            }), 200
+        else:
+            return jsonify({'valid': False, 'error': 'User not found'}), 404
+            
+    except Exception as e:
+        logger.error(f"Error validating session: {str(e)}")
+        return jsonify({'valid': False, 'error': str(e)}), 500
+
 if __name__ == '__main__':
     # Test database connection on startup
     try:
