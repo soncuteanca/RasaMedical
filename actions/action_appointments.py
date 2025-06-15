@@ -41,6 +41,7 @@ class ActionBookAppointment(Action):
             final_slots = {**existing_slots, **current_slots}
             
             # Try to create appointment
+            # Note: User context will be handled automatically by appointment manager
             result = appointment_mgr.create_appointment(final_slots)
             
             if result["success"]:
@@ -190,6 +191,7 @@ class ActionSubmitAppointmentForm(Action):
         }
 
         try:
+            # Create appointment - user context handled automatically
             result = appointment_mgr.create_appointment(slots)
             dispatcher.utter_message(text=result["message"])
             return [
@@ -199,3 +201,34 @@ class ActionSubmitAppointmentForm(Action):
         except Exception as e:
             dispatcher.utter_message(text=f"Sorry, I couldn't complete your appointment booking: {str(e)}")
             return [AllSlotsReset()]
+
+
+class ActionViewAppointments(Action):
+    def name(self) -> Text:
+        return "action_view_appointments"
+
+    async def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
+    ) -> List[Dict[Text, Any]]:
+        try:
+            # Get appointments from database - user context handled automatically
+            result = appointment_mgr.get_appointments()
+            
+            if result["success"] and result["appointments"]:
+                message_lines = ["📅 Your Appointments:"]
+                for apt in result["appointments"]:
+                    status_emoji = "✅" if apt["status"] == "scheduled" else "❌" if apt["status"] == "cancelled" else "✔️"
+                    message_lines.append(
+                        f"{status_emoji} {apt['date']} at {apt['time']} - {apt['doctor']}\n"
+                        f"   Reason: {apt['reason']}"
+                    )
+                message = "\n".join(message_lines)
+            else:
+                message = "📅 You have no appointments scheduled."
+            
+            dispatcher.utter_message(text=message)
+            return []
+
+        except Exception as e:
+            dispatcher.utter_message(text=f"Sorry, I couldn't retrieve your appointments: {str(e)}")
+            return []

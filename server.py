@@ -52,8 +52,8 @@ def handle_appointments():
     if request.method == 'POST':
         try:
             data = request.json
-            query = "INSERT INTO appointments (patient_id, appointment_date, reason) VALUES (%s, %s, %s)"
-            params = (data['patient_id'], data['appointment_date'], data['reason'])
+            query = "INSERT INTO appointments (user_id, doctor_id, appointment_date, reason) VALUES (%s, %s, %s, %s)"
+            params = (data['user_id'], data['doctor_id'], data['appointment_date'], data['reason'])
             db_manager.execute_query(query, params, fetch=False)
             return jsonify({'message': 'Appointment added successfully'}), 201
         except Exception as e:
@@ -61,8 +61,24 @@ def handle_appointments():
             return jsonify({'error': str(e)}), 500
     else:
         try:
-            query = "SELECT * FROM appointments"
-            results = db_manager.execute_query(query)
+            user_id = request.args.get('user_id')
+            if user_id:
+                query = """
+                    SELECT a.*, d.name as doctor_name 
+                    FROM appointments a 
+                    LEFT JOIN doctors d ON a.doctor_id = d.id 
+                    WHERE a.user_id = %s 
+                    ORDER BY a.appointment_date DESC
+                """
+                results = db_manager.execute_query(query, (user_id,))
+            else:
+                query = """
+                    SELECT a.*, d.name as doctor_name 
+                    FROM appointments a 
+                    LEFT JOIN doctors d ON a.doctor_id = d.id 
+                    ORDER BY a.appointment_date DESC
+                """
+                results = db_manager.execute_query(query)
             return jsonify(results)
         except Exception as e:
             logger.error(f"Error fetching appointments: {str(e)}")

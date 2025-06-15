@@ -2,13 +2,18 @@ import json
 import re
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any
+from .db_connect import db_manager
 
 
 class AppointmentManager:
     def __init__(self):
         self.appointments = {}
         self.next_id = 1
-        self.known_doctors = ["Smith", "Johnson", "Williams", "Brown", "Jones"]
+        # Removed hardcoded doctors list - now validating against database
+        # For now, we'll use a default user_id. In a real implementation, 
+        # this would come from the user session/context
+        self.default_user_id = 1
+        self.current_user_id = None
 
     def handle_rasa_intent(self, rasa_data: Dict[str, Any]) -> Dict[str, Any]:
         """Handle Rasa-parsed appointment intent"""
@@ -47,20 +52,66 @@ class AppointmentManager:
 
         return slots
 
+    def set_user_id(self, user_id: int):
+        """Set the current user ID for appointments"""
+        self.current_user_id = user_id
+
+    def _get_user_id(self) -> int:
+        """Get the current user ID, fallback to first available user if not set"""
+        if self.current_user_id:
+            return self.current_user_id
+        
+        # If no user_id is set, try to get the first available user from database
+        try:
+            query = "SELECT id FROM users ORDER BY id LIMIT 1"
+            result = db_manager.execute_query(query)
+            if result:
+                return result[0]['id']
+            else:
+                raise ValueError("No users found in database. Please create a user account first.")
+        except Exception as e:
+            raise ValueError(f"Error getting user context: {str(e)}")
+
+    def _get_doctor_id(self, doctor_name: str) -> int:
+        """Get doctor ID from database by name"""
+        try:
+            # Remove Dr. prefix if present for database lookup
+            clean_name = re.sub(r'^(dr\.?|doctor)\s+', '', doctor_name.strip(), flags=re.IGNORECASE)
+            
+            query = "SELECT id FROM doctors WHERE name LIKE %s"
+            results = db_manager.execute_query(query, (f"%{clean_name}%",))
+            
+            if results:
+                return results[0]['id']
+            else:
+                raise ValueError(f"Doctor not found in database: {clean_name}")
+        except Exception as e:
+            raise ValueError(f"Error finding doctor: {str(e)}")
+
     def _normalize_doctor_name(self, doctor_input: str) -> str:
-        """Normalize doctor name with validation"""
+        """Normalize doctor name with validation against database"""
         if not doctor_input:
             return None
 
         # Remove any existing prefix
         doctor_name = re.sub(r'^(dr\.?|doctor)\s+', '', doctor_input.strip(), flags=re.IGNORECASE)
         
-        # Validate against known doctors
-        if doctor_name.title() not in self.known_doctors:
-            raise ValueError(f"Unknown doctor: {doctor_name}")
-        
-        # Add Dr. prefix
-        return f"Dr. {doctor_name.title()}"
+        # Check if doctor exists in database
+        try:
+            query = "SELECT name FROM doctors WHERE name LIKE %s"
+            results = db_manager.execute_query(query, (f"%{doctor_name}%",))
+            
+            if results:
+                # Return the actual doctor name from database (already includes Dr. prefix)
+                doctor_name = results[0]['name']
+                if doctor_name.startswith('Dr.'):
+                    return doctor_name
+                else:
+                    return f"Dr. {doctor_name}"
+            else:
+                raise ValueError(f"Unknown doctor: {doctor_name}")
+        except Exception as e:
+            raise ValueError(f"Error validating doctor: {str(e)}")
 
     def _normalize_reason(self, reason: str) -> str:
         """Normalize and validate reason for visit"""
@@ -110,9 +161,28 @@ class AppointmentManager:
                     "missing_slots": ["reason"]
                 }
 
-            # Create appointment
+            # Get doctor ID from database
+            doctor_id = self._get_doctor_id(normalized_doctor)
+            
+            # Combine date and time for database storage
+            appointment_datetime = f"{normalized_date} {normalized_time}:00"
+            
+            # Save appointment to database
+            query = """
+                INSERT INTO appointments (user_id, doctor_id, appointment_date, reason, status) 
+                VALUES (%s, %s, %s, %s, %s)
+            """
+            params = (self._get_user_id(), doctor_id, appointment_datetime, reason, "scheduled")
+            db_manager.execute_query(query, params, fetch=False)
+            
+            # Get the inserted appointment ID
+            get_id_query = "SELECT LAST_INSERT_ID() as id"
+            result = db_manager.execute_query(get_id_query)
+            appointment_id = result[0]['id']
+
+            # Create appointment object for response
             appointment = {
-                "id": self.next_id,
+                "id": appointment_id,
                 "date": normalized_date,
                 "time": normalized_time,
                 "doctor": normalized_doctor,
@@ -121,10 +191,8 @@ class AppointmentManager:
                 "created_at": datetime.now().isoformat()
             }
 
-            # Store appointment
-            self.appointments[self.next_id] = appointment
-            appointment_id = self.next_id
-            self.next_id += 1
+            # Also store in memory for backward compatibility
+            self.appointments[appointment_id] = appointment
 
             # Format confirmation message
             message = (
@@ -217,33 +285,66 @@ class AppointmentManager:
         }
 
     def get_appointments(self, slots: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Get appointments with optional filters"""
+        """Get appointments from database with optional filters"""
         if slots is None:
             slots = {}
 
-        appointments = list(self.appointments.values())
+        try:
+            # Base query to get appointments with doctor names
+            query = """
+                SELECT a.*, d.name as doctor_name 
+                FROM appointments a 
+                LEFT JOIN doctors d ON a.doctor_id = d.id 
+                WHERE a.user_id = %s
+            """
+            params = [self._get_user_id()]
 
-        # Apply filters based on slots
-        if slots.get("date"):
-            filter_date = self._normalize_date(slots["date"])
-            appointments = [apt for apt in appointments if apt["date"] == filter_date]
+            # Apply filters based on slots
+            if slots.get("date"):
+                filter_date = self._normalize_date(slots["date"])
+                query += " AND DATE(a.appointment_date) = %s"
+                params.append(filter_date)
 
-        if slots.get("doctor_name"):
-            doctor_name = slots["doctor_name"].lower()
-            appointments = [
-                apt for apt in appointments
-                if apt.get("doctor") and doctor_name in apt["doctor"].lower()
-            ]
+            if slots.get("doctor_name"):
+                query += " AND d.name LIKE %s"
+                params.append(f"%{slots['doctor_name']}%")
 
-        if slots.get("status"):
-            appointments = [apt for apt in appointments if apt["status"] == slots["status"]]
+            if slots.get("status"):
+                query += " AND a.status = %s"
+                params.append(slots["status"])
 
-        return {
-            "success": True,
-            "appointments": appointments,
-            "count": len(appointments),
-            "message": f"Found {len(appointments)} appointment(s)"
-        }
+            query += " ORDER BY a.appointment_date DESC"
+
+            results = db_manager.execute_query(query, params)
+
+            # Convert database results to appointment format
+            appointments = []
+            for row in results:
+                appointment = {
+                    "id": row["id"],
+                    "date": row["appointment_date"].strftime("%Y-%m-%d") if row["appointment_date"] else None,
+                    "time": row["appointment_date"].strftime("%H:%M") if row["appointment_date"] else None,
+                    "doctor": row['doctor_name'] if row["doctor_name"] and row['doctor_name'].startswith('Dr.') else f"Dr. {row['doctor_name']}" if row["doctor_name"] else "Unknown Doctor",
+                    "reason": row["reason"],
+                    "status": row["status"],
+                    "created_at": row["created_at"].isoformat() if row["created_at"] else None
+                }
+                appointments.append(appointment)
+
+            return {
+                "success": True,
+                "appointments": appointments,
+                "count": len(appointments),
+                "message": f"Found {len(appointments)} appointment(s)"
+            }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "appointments": [],
+                "count": 0,
+                "message": f"Error retrieving appointments: {str(e)}"
+            }
 
     def _serialize_for_database(self, appointment: Dict[str, Any]) -> str:
         """Serialize appointment for database storage"""
