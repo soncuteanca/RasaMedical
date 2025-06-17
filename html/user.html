@@ -141,6 +141,68 @@
             padding: 14px 18px;
             border-radius: 8px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            border-left: 4px solid #B3A09A;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .appointment-list li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .appointment-scheduled {
+            border-left-color: #8B4513 !important;
+        }
+        .appointment-cancelled {
+            border-left-color: #5E1F28 !important;
+            opacity: 0.8;
+        }
+        .appointment-completed {
+            border-left-color: #A0522D !important;
+        }
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .appointment-date-time {
+            font-weight: bold;
+            color: #5E1F28;
+            font-size: 16px;
+        }
+        .appointment-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-scheduled {
+            background: #D0C8C0;
+            color: #8B4513;
+            border: 1px solid #8B4513;
+        }
+        .status-cancelled {
+            background: #B3A09A;
+            color: #5E1F28;
+            border: 1px solid #5E1F28;
+        }
+        .status-completed {
+            background: #CFC3BD;
+            color: #A0522D;
+            border: 1px solid #A0522D;
+        }
+        .appointment-details {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .appointment-doctor {
+            color: #5E1F28;
+            font-weight: 600;
+        }
+        .appointment-reason {
+            margin-top: 4px;
+            font-style: italic;
         }
         .empty-msg {
             color: #888;
@@ -301,7 +363,11 @@
         </div>
     </div>
     <div class="section">
-        <div class="section-title">Appointments</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div class="section-title">My Appointments</div>
+            <button onclick="manageAppointments()" class="button button-chat" style="padding: 12px 24px; font-size: 16px;">💬 Manage Appointments</button>
+        </div>
+        
         <ul class="appointment-list" id="appointmentList">
             <li class="empty-msg">Loading appointments...</li>
         </ul>
@@ -426,25 +492,192 @@ const userObj = JSON.parse(user);
 document.getElementById('profileName').textContent = userObj.name || 'User';
 document.getElementById('profileAvatar').textContent = userObj.name ? userObj.name.charAt(0).toUpperCase() : 'U';
 
-// Fetch appointments
-fetch(`http://localhost:5000/api/appointments?user_id=${userObj.id}`)
-    .then(res => res.json())
-    .then(data => {
-        const list = document.getElementById('appointmentList');
-        list.innerHTML = '';
-        if (Array.isArray(data) && data.length > 0) {
-            data.forEach(app => {
-                const li = document.createElement('li');
-                li.textContent = `Date: ${app.appointment_date} | Reason: ${app.reason || 'N/A'} | Status: ${app.status || 'scheduled'}`;
-                list.appendChild(li);
-            });
+// Function to load appointments
+function loadAppointments() {
+    const list = document.getElementById('appointmentList');
+    list.innerHTML = '<li class="empty-msg">Loading appointments...</li>';
+    
+    console.log('Loading appointments for user ID:', userObj.id);
+    
+    // First try to get appointments for the current user
+    return fetch(`http://localhost:5000/api/appointments?user_id=${userObj.id}`)
+        .then(res => {
+            console.log('API response status:', res.status);
+            return res.json();
+        })
+        .then(data => {
+            console.log('Received appointment data for user', userObj.id, ':', data);
+            
+            // If no appointments found for current user, try to get all appointments
+            // This is a temporary fix to show existing appointments
+            if (!data || data.length === 0) {
+                console.log('No appointments found for current user, trying to fetch all appointments...');
+                return fetch(`http://localhost:5000/api/appointments`)
+                    .then(res => res.json())
+                    .then(allData => {
+                        console.log('All appointments in database:', allData);
+                        // Show a message about user ID mismatch
+                        if (allData && allData.length > 0) {
+                            const uniqueUserIds = [...new Set(allData.map(apt => apt.user_id))];
+                            console.log('Appointments exist for user IDs:', uniqueUserIds);
+                            console.log('Current logged-in user ID:', userObj.id);
+                            
+                            // For demonstration, show all appointments but with a warning
+                            displayAppointments(allData, true);
+                            return allData; // Return the data to prevent further processing
+                        }
+                        return [];
+                    });
+            }
+            return data;
+        })
+        .then(data => {
+            if (data && data.length > 0) {
+                displayAppointments(data, false);
+            } else {
+                showEmptyState();
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching appointments:', error);
+            list.innerHTML = '<li class="empty-msg">Failed to load appointments. Please try refreshing the page.</li>';
+        });
+}
+
+// Function to display appointments
+function displayAppointments(appointments, showWarning = false) {
+    const list = document.getElementById('appointmentList');
+    list.innerHTML = '';
+    
+    if (showWarning) {
+        const warningLi = document.createElement('li');
+        warningLi.style.cssText = `
+            background: #D0C8C0; 
+            border-left: 4px solid #8B4513; 
+            margin-bottom: 15px; 
+            padding: 15px;
+            border-radius: 8px;
+        `;
+        warningLi.innerHTML = `
+            <div style="color: #5E1F28; font-weight: bold; margin-bottom: 5px;">⚠️ User ID Mismatch Detected</div>
+            <div style="color: #8B4513; font-size: 14px;">
+                Showing appointments from database. Some appointments may belong to different users.
+                <br><strong>Current user ID:</strong> ${userObj.id}
+                <br><strong>Tip:</strong> Use the chat to create appointments for your account.
+            </div>
+        `;
+        list.appendChild(warningLi);
+    }
+
+    // Sort appointments by date (newest first)
+    appointments.sort((a, b) => new Date(b.appointment_date) - new Date(a.appointment_date));
+    
+    appointments.forEach(app => {
+        const li = document.createElement('li');
+        const status = app.status || 'scheduled';
+        li.className = `appointment-${status}`;
+        
+        // Format date and time
+        const appointmentDate = new Date(app.appointment_date);
+        const dateStr = appointmentDate.toLocaleDateString('en-US', {
+            weekday: 'short',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+        const timeStr = appointmentDate.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        // Determine if appointment is in the past, today, or future
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const appointmentDay = new Date(appointmentDate.getFullYear(), appointmentDate.getMonth(), appointmentDate.getDate());
+        
+        let dateIcon = '📅';
+        if (appointmentDay < today) {
+            dateIcon = '📋'; // Past appointment
+        } else if (appointmentDay.getTime() === today.getTime()) {
+            dateIcon = '🔔'; // Today
         } else {
-            list.innerHTML = '<li class="empty-msg">No appointments found.</li>';
+            dateIcon = '📅'; // Future appointment
         }
-    })
-    .catch(() => {
-        document.getElementById('appointmentList').innerHTML = '<li class="empty-msg">Failed to load appointments.</li>';
+        
+        // Add user ID info if showing warning
+        const userInfo = showWarning ? `<div style="font-size: 12px; color: #666;">User ID: ${app.user_id}</div>` : '';
+        
+        li.innerHTML = `
+            <div class="appointment-header">
+                <div class="appointment-date-time">${dateIcon} ${dateStr} at ${timeStr}</div>
+                <div class="appointment-status status-${status}">${status}</div>
+            </div>
+            <div class="appointment-details">
+                <div class="appointment-doctor">👨‍⚕️ ${app.doctor_name || 'Doctor not specified'}</div>
+                <div class="appointment-reason">📝 ${app.reason || 'No reason specified'}</div>
+                ${userInfo}
+            </div>
+        `;
+        list.appendChild(li);
     });
+}
+
+// Function to show empty state
+function showEmptyState() {
+    const list = document.getElementById('appointmentList');
+    list.innerHTML = `
+        <li class="empty-msg">
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 48px; margin-bottom: 10px;">📅</div>
+                <div style="font-size: 18px; margin-bottom: 10px;">No appointments found</div>
+                <div style="font-size: 14px; color: #666; margin-bottom: 15px;">
+                    Book your first appointment through our chat assistant!
+                    <br><small>Current user ID: ${userObj.id}</small>
+                </div>
+                <button onclick="manageAppointments()" class="button button-chat" style="padding: 10px 20px;">
+                    💬 Start Booking
+                </button>
+            </div>
+        </li>
+    `;
+}
+
+// Function to refresh appointments
+function refreshAppointments() {
+    loadAppointments().then(() => {
+        // Show a temporary success message
+        const list = document.getElementById('appointmentList');
+        const successMsg = document.createElement('div');
+        successMsg.textContent = '✅ Appointments refreshed!';
+        successMsg.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: #8B4513;
+            color: #F0EDEA;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            font-weight: bold;
+            border: 2px solid #5E1F28;
+        `;
+        document.body.appendChild(successMsg);
+        
+        setTimeout(() => {
+            document.body.removeChild(successMsg);
+        }, 2000);
+    });
+}
+
+// Function to manage appointments via chat
+function manageAppointments() {
+    // Store a flag to indicate the user wants to manage appointments
+    localStorage.setItem('appointmentAction', 'manage');
+    handleChatClick(new Event('click'));
+}
+
+// Initial load of appointments
+loadAppointments();
 
 // Fetch medical records
 fetch(`http://localhost:5000/api/records?user_id=${userObj.id}`)
