@@ -125,6 +125,8 @@ nlu:
       - Clinic schedule?
       - What's your timetable?
       - Are you closed on holidays?
+      - Hours
+      - Timetable
 
 
   - intent: ask_services_intent
@@ -213,6 +215,7 @@ nlu:
       - I feel short of breath
       - I'm dizzy
       - My chest hurts
+      - I have chest pain
       - I have palpitations
       - My legs feel heavy
       - There's pain in my chest
@@ -223,6 +226,9 @@ nlu:
       - Swollen ankles
       - My chest feels tight
       - I'm nauseous and dizzy
+      - chest pain
+      - pain in chest
+      - chest discomfort
 
 
   - intent: affirm
@@ -241,6 +247,12 @@ nlu:
       - Sounds good
       - That works
       - Let's do it
+      - Ok
+      - OK
+      - yeah
+      - right
+      - correct
+      - exactly
 
   - intent: ask_doctors_by_specialty
     examples: |
@@ -257,9 +269,13 @@ nlu:
       - [Adult](specialty)
       - [Pediatric](specialty)
       - [Cardiovascular](specialty)
+      - [Surgery](specialty)
+      - [Surgeons](specialty)
       - [adult](specialty)
       - [pediatric](specialty)
       - [cardiovascular](specialty)
+      - [surgery](specialty)
+      - [surgeons](specialty)
       - [Adult Cardiologists](specialty)
       - [Pediatric Cardiologists](specialty)
       - [Cardiovascular Surgeons](specialty)
@@ -390,6 +406,28 @@ nlu:
       - Change my appointment time to [4 PM](time)
       - Reschedule my appointment
       - Move my appointment with [Dr. Miller](doctor_name)
+      - Change the time to [3 PM](time)
+      - Move it to [Friday](date)
+      - I want to see [Dr. Johnson](doctor_name) instead
+      - Change it to [3pm](time)
+      - Move my appointment to [tomorrow](date)
+      - Reschedule for [2 PM](time)
+      - Change doctor to [Dr. Smith](doctor_name)
+      - Move my appointment with [Johnson](doctor_name)
+      - Change my appointment with [Dr. Johnson](doctor_name)
+      - Reschedule my appointment to [4:00 PM](time)
+      - Move my appointment to [next week](date)
+      - I want to change my appointment time
+      - I need to reschedule
+      - Can I move my appointment?
+      - I want to change my doctor
+      - Switch my appointment to [Dr. Smith](doctor_name)
+      - Change appointment time
+      - Modify my booking
+      - Update my appointment
+      - Reschedule my booking
+      - Move my booking
+      - Change booking time
 
   - intent: cancel_appointment
     examples: |
@@ -403,6 +441,23 @@ nlu:
       - What appointments do I have?
       - List my upcoming appointments
       - Do I have any appointments on [Friday](date)?
+      - Show appoitment
+      - Show appointments
+      - List my appointments
+      - View my appointments
+      - My appointments
+      - Appointments
+      - Show my booking
+      - List my bookings
+      - View my bookings
+      - What bookings do I have?
+      - Display my appointments
+      - Check my appointments
+      - See my appointments
+      - Appointment list
+      - Show scheduled appointments
+      - List upcoming appointments
+      - View scheduled appointments
 
   - intent: provide_date
     examples: |
@@ -450,7 +505,6 @@ nlu:
 
   - intent: provide_reason
     examples: |
-      - [chest pain](reason)
       - [chest pai](reason)
       - [pain](reason)
       - [heart](reason)
@@ -468,7 +522,6 @@ nlu:
       - [rapid pulse](reason)
       - [fast heartbeat](reason)
       - [heart rate](reason)
-      - [chest discomfort](reason)
       - [chest tightness](reason)
       - [shortness of breath](reason)
       - [breathing problems](reason)
@@ -476,15 +529,4 @@ nlu:
       - [tiredness](reason)
       - [weakness](reason)
 
-  - intent: ask_doctors
-    examples: |
-      - doctor list
-      - show doctors
-      - list doctors
-      - available doctors
-      - who are the doctors
-      - which doctors are available
-      - show me the doctors
-      - list of doctors
-      - who can I see
-      - who are the cardiologists
+

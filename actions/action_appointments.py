@@ -151,6 +151,15 @@ class ValidateAppointmentForm(FormValidationAction):
         domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate reason slot with enhanced validation."""
+        
+        # Check if this is a symptom intent during the form
+        intent = tracker.latest_message.get("intent", {}).get("name")
+        if intent == "report_symptom_intent":
+            # Extract the symptom text as the reason
+            symptom_text = tracker.latest_message.get("text", "").strip()
+            if symptom_text:
+                return {"reason": symptom_text}
+        
         if not slot_value:
             dispatcher.utter_message(text="What's the reason for your visit?")
             return {"reason": None}
@@ -231,4 +240,100 @@ class ActionViewAppointments(Action):
 
         except Exception as e:
             dispatcher.utter_message(text=f"Sorry, I couldn't retrieve your appointments: {str(e)}")
+            return []
+
+
+class ActionCancelAppointment(Action):
+    def name(self) -> Text:
+        return "action_cancel_appointment"
+
+    async def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
+    ) -> List[Dict[Text, Any]]:
+        try:
+            # Get appointments from database
+            result = appointment_mgr.get_appointments()
+            
+            if result["success"] and result["appointments"]:
+                # Get the most recent appointment to cancel
+                active_appointments = [apt for apt in result["appointments"] if apt["status"] == "scheduled"]
+                
+                if active_appointments:
+                    # For simplicity, cancel the most recent appointment
+                    # In a real system, you'd ask which specific appointment to cancel
+                    latest_apt = active_appointments[0]
+                    
+                    # Cancel the appointment
+                    cancel_result = appointment_mgr.cancel_appointment(latest_apt["id"])
+                    
+                    if cancel_result["success"]:
+                        dispatcher.utter_message(
+                            text=f"✅ Your appointment on {latest_apt['date']} at {latest_apt['time']} with {latest_apt['doctor']} has been cancelled."
+                        )
+                    else:
+                        dispatcher.utter_message(text=f"❌ Sorry, I couldn't cancel your appointment: {cancel_result['message']}")
+                else:
+                    dispatcher.utter_message(text="📅 You have no active appointments to cancel.")
+            else:
+                dispatcher.utter_message(text="📅 You have no appointments to cancel.")
+            
+            return []
+
+        except Exception as e:
+            dispatcher.utter_message(text=f"Sorry, I couldn't cancel your appointment: {str(e)}")
+            return []
+
+
+class ActionModifyAppointment(Action):
+    def name(self) -> Text:
+        return "action_modify_appointment"
+
+    async def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
+    ) -> List[Dict[Text, Any]]:
+        try:
+            # Get appointments from database
+            result = appointment_mgr.get_appointments()
+            
+            if result["success"] and result["appointments"]:
+                # Get the most recent appointment to modify
+                active_appointments = [apt for apt in result["appointments"] if apt["status"] == "scheduled"]
+                
+                if active_appointments:
+                    latest_apt = active_appointments[0]
+                    
+                    # Get entities from current message for modification
+                    entities = tracker.latest_message.get("entities", [])
+                    modifications = {}
+                    
+                    for entity in entities:
+                        if entity["entity"] in ["date", "time", "doctor_name"]:
+                            modifications[entity["entity"]] = entity["value"]
+                    
+                    if modifications:
+                        # Apply modifications
+                        modify_result = appointment_mgr.modify_appointment(latest_apt["id"], modifications)
+                        
+                        if modify_result["success"]:
+                            dispatcher.utter_message(text=modify_result["message"])
+                        else:
+                            dispatcher.utter_message(text=f"❌ Sorry, I couldn't modify your appointment: {modify_result['message']}")
+                    else:
+                        # No specific modifications provided, ask what they want to change
+                        dispatcher.utter_message(
+                            text=f"I can help you modify your appointment on {latest_apt['date']} at {latest_apt['time']} with {latest_apt['doctor']}.\n"
+                                 f"What would you like to change? You can say things like:\n"
+                                 f"• 'Change the time to 3 PM'\n"
+                                 f"• 'Move it to Friday'\n"
+                                 f"• 'I want to see Dr. Johnson instead'"
+                        )
+                else:
+                    dispatcher.utter_message(text="📅 You have no active appointments to modify.")
+            else:
+                dispatcher.utter_message(text="📅 You have no appointments to modify.")
+            
+            return []
+
+        except Exception as e:
+            dispatcher.utter_message(text=f"Sorry, I couldn't modify your appointment: {str(e)}")
             return []

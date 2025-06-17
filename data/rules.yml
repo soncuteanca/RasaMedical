@@ -123,3 +123,26 @@ rules:
       - intent: provide_reason
       - action: appointment_form
       - active_loop: appointment_form
+
+  - rule: Handle symptom as reason during form
+    condition:
+      - active_loop: appointment_form
+    steps:
+      - intent: report_symptom_intent
+      - action: appointment_form
+      - active_loop: appointment_form
+
+  - rule: Modify appointment
+    steps:
+      - intent: modify_appointment
+      - action: action_modify_appointment
+
+  - rule: Cancel appointment
+    steps:
+      - intent: cancel_appointment
+      - action: action_cancel_appointment
+
+  - rule: View appointments
+    steps:
+      - intent: view_appointments
+      - action: action_view_appointments

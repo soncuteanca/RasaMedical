@@ -154,6 +154,7 @@ actions:
   - action_cancel_appointment
   - action_view_appointments
   - action_submit_appointment_form
+  - validate_appointment_form
 
 
 

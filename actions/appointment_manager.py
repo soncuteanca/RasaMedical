@@ -259,30 +259,56 @@ class AppointmentManager:
         }
 
     def cancel_appointment(self, appointment_id: Optional[str]) -> Dict[str, Any]:
-        """Cancel appointment"""
-        if not appointment_id:
-            # Try to get the most recent appointment
-            if self.appointments:
-                appointment_id = max(self.appointments.keys())
-            else:
-                raise ValueError("No appointment ID provided and no appointments found")
+        """Cancel appointment in database"""
+        try:
+            if not appointment_id:
+                return {
+                    "success": False,
+                    "message": "No appointment ID provided"
+                }
 
-        appt_id = int(appointment_id)
-        appointment = self.appointments.get(appt_id)
-
-        if not appointment:
-            raise ValueError(f"Appointment with ID {appt_id} not found")
-
-        appointment["status"] = "cancelled"
-        appointment["metadata"]["cancelled_at"] = datetime.now().isoformat()
-        appointment["metadata"]["updated_at"] = datetime.now().isoformat()
-
-        return {
-            "success": True,
-            "appointment": appointment,
-            "message": f"❌ Appointment {appt_id} cancelled\n📅 Was: {appointment['date']} at {appointment['time']}",
-            "db_string": self._serialize_for_database(appointment)
-        }
+            appt_id = int(appointment_id)
+            
+            # Get the appointment from database first
+            query = """
+                SELECT a.*, d.name as doctor_name 
+                FROM appointments a 
+                LEFT JOIN doctors d ON a.doctor_id = d.id 
+                WHERE a.id = %s AND a.user_id = %s
+            """
+            results = db_manager.execute_query(query, (appt_id, self._get_user_id()))
+            
+            if not results:
+                return {
+                    "success": False,
+                    "message": f"Appointment with ID {appt_id} not found or you don't have permission to cancel it."
+                }
+            
+            appointment = results[0]
+            
+            # Update the appointment status to cancelled
+            update_query = """
+                UPDATE appointments 
+                SET status = 'cancelled'
+                WHERE id = %s AND user_id = %s
+            """
+            db_manager.execute_query(update_query, (appt_id, self._get_user_id()), fetch=False)
+            
+            # Format the response
+            date_str = appointment["appointment_date"].strftime("%Y-%m-%d") if appointment["appointment_date"] else "Unknown date"
+            time_str = appointment["appointment_date"].strftime("%H:%M") if appointment["appointment_date"] else "Unknown time"
+            doctor_name = appointment["doctor_name"] if appointment["doctor_name"] else "Unknown doctor"
+            
+            return {
+                "success": True,
+                "message": f"✅ Appointment cancelled successfully!\n📅 Was: {date_str} at {time_str}\n👨‍⚕️ Dr. {doctor_name}"
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Error cancelling appointment: {str(e)}"
+            }
 
     def get_appointments(self, slots: Dict[str, Any] = None) -> Dict[str, Any]:
         """Get appointments from database with optional filters"""
@@ -455,6 +481,101 @@ class AppointmentManager:
             
         except Exception as e:
             raise ValueError(f"Time parsing error: {str(e)}")
+
+    def modify_appointment(self, appointment_id: int, modifications: Dict[str, Any]) -> Dict[str, Any]:
+        """Modify an existing appointment"""
+        try:
+            # Get the appointment from database
+            query = """
+                SELECT a.*, d.name as doctor_name 
+                FROM appointments a 
+                LEFT JOIN doctors d ON a.doctor_id = d.id 
+                WHERE a.id = %s AND a.user_id = %s
+            """
+            results = db_manager.execute_query(query, (appointment_id, self._get_user_id()))
+            
+            if not results:
+                return {
+                    "success": False,
+                    "message": "Appointment not found or you don't have permission to modify it."
+                }
+            
+            appointment = results[0]
+            update_fields = []
+            update_params = []
+            
+            # Handle date modification
+            if "date" in modifications:
+                try:
+                    new_date = self._normalize_date(modifications["date"])
+                    # Combine with existing time or default time
+                    existing_time = appointment["appointment_date"].strftime("%H:%M") if appointment["appointment_date"] else "09:00"
+                    new_datetime = f"{new_date} {existing_time}"
+                    update_fields.append("appointment_date = %s")
+                    update_params.append(new_datetime)
+                except ValueError as e:
+                    return {"success": False, "message": f"Invalid date: {str(e)}"}
+            
+            # Handle time modification
+            if "time" in modifications:
+                try:
+                    new_time = self._normalize_time(modifications["time"])
+                    # Combine with existing date or default to tomorrow
+                    existing_date = appointment["appointment_date"].strftime("%Y-%m-%d") if appointment["appointment_date"] else self._normalize_date("tomorrow")
+                    new_datetime = f"{existing_date} {new_time}"
+                    update_fields.append("appointment_date = %s")
+                    update_params.append(new_datetime)
+                except ValueError as e:
+                    return {"success": False, "message": f"Invalid time: {str(e)}"}
+            
+            # Handle doctor modification
+            if "doctor_name" in modifications:
+                try:
+                    normalized_doctor = self._normalize_doctor_name(modifications["doctor_name"])
+                    doctor_id = self._get_doctor_id(normalized_doctor)
+                    update_fields.append("doctor_id = %s")
+                    update_params.append(doctor_id)
+                except ValueError as e:
+                    return {"success": False, "message": f"Invalid doctor: {str(e)}"}
+            
+            # Handle reason modification
+            if "reason" in modifications:
+                normalized_reason = self._normalize_reason(modifications["reason"])
+                update_fields.append("reason = %s")
+                update_params.append(normalized_reason)
+            
+            if not update_fields:
+                return {"success": False, "message": "No valid modifications provided."}
+            
+            # Update the appointment
+            update_query = f"""
+                UPDATE appointments 
+                SET {', '.join(update_fields)}, updated_at = NOW()
+                WHERE id = %s AND user_id = %s
+            """
+            update_params.extend([appointment_id, self._get_user_id()])
+            
+            db_manager.execute_query(update_query, update_params, fetch=False)
+            
+            # Get the updated appointment
+            updated_results = db_manager.execute_query(query, (appointment_id, self._get_user_id()))
+            updated_appointment = updated_results[0]
+            
+            # Format response message
+            date_str = updated_appointment["appointment_date"].strftime("%Y-%m-%d") if updated_appointment["appointment_date"] else "Unknown date"
+            time_str = updated_appointment["appointment_date"].strftime("%H:%M") if updated_appointment["appointment_date"] else "Unknown time"
+            doctor_name = updated_appointment["doctor_name"] if updated_appointment["doctor_name"] else "Unknown doctor"
+            
+            return {
+                "success": True,
+                "message": f"✅ Appointment updated successfully!\n📅 {date_str} at {time_str}\n👨‍⚕️ Dr. {doctor_name}\n📝 Reason: {updated_appointment['reason']}"
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Error modifying appointment: {str(e)}"
+            }
 
     def get_appointment(self, appointment_id: int) -> Dict[str, Any]:
         """Get appointment by ID"""
