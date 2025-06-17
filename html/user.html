@@ -231,7 +231,7 @@
             color: #F0EDEA;
             text-decoration: none;
         }
-        .button-delete {
+        .button-delete, .button-consistent {
             background: #B3A09A;
             color: #5E1F28;
             border: 2px solid #5E1F28;
@@ -241,8 +241,11 @@
             font-weight: bold;
             font-size: 16px;
             transition: background 0.2s, color 0.2s;
+            min-width: 140px;
+            text-align: center;
+            box-sizing: border-box;
         }
-        .button-delete:hover {
+        .button-delete:hover, .button-consistent:hover {
             background: #4A1F24;
             color: #F0EDEA;
         }
@@ -387,7 +390,7 @@
     <div class="section">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <div class="section-title">My Appointments</div>
-            <button onclick="manageAppointments()" class="button button-chat" style="padding: 12px 24px; font-size: 16px;">💬 Manage Appointments</button>
+            <button onclick="manageAppointments()" class="button-consistent">💬 Manage Appointments</button>
         </div>
         
         <ul class="appointment-list" id="appointmentList">
@@ -673,7 +676,7 @@ function showEmptyState() {
                 <div style="font-size: 14px; color: #666; margin-bottom: 15px;">
                     Book an appointment through our chat assistant!
                 </div>
-                <button onclick="manageAppointments()" class="button button-chat" style="padding: 10px 20px;">
+                <button onclick="manageAppointments()" class="button-consistent">
                     💬 Start Booking
                 </button>
             </div>
