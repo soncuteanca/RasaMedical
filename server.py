@@ -84,6 +84,26 @@ def handle_appointments():
             logger.error(f"Error fetching appointments: {str(e)}")
             return jsonify({'error': str(e)}), 500
 
+@app.route('/api/appointments/<int:appointment_id>', methods=['DELETE'])
+def delete_appointment(appointment_id):
+    try:
+        # First check if the appointment exists
+        check_query = "SELECT id FROM appointments WHERE id = %s"
+        result = db_manager.execute_query(check_query, (appointment_id,))
+        
+        if not result:
+            return jsonify({'error': 'Appointment not found'}), 404
+        
+        # Delete the appointment
+        delete_query = "DELETE FROM appointments WHERE id = %s"
+        db_manager.execute_query(delete_query, (appointment_id,), fetch=False)
+        
+        logger.info(f"Appointment {appointment_id} deleted successfully")
+        return jsonify({'message': 'Appointment deleted successfully'}), 200
+    except Exception as e:
+        logger.error(f"Error deleting appointment: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/records', methods=['GET', 'POST'])
 def handle_records():
     if request.method == 'POST':

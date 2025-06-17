@@ -240,7 +240,7 @@
             color: #F0EDEA;
             border-color: #4A1F24;
         }
-        #deleteModal .modal-content, #successModal .modal-content {
+        #deleteModal .modal-content, #successModal .modal-content, #deleteAppointmentModal .modal-content {
             background: #B3A09A;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(114, 47, 55, 0.25);
@@ -249,16 +249,16 @@
             border-top: 4px solid #5E1F28;
             padding: 30px 40px;
         }
-        #deleteModal h3, #successModal h3 {
+        #deleteModal h3, #successModal h3, #deleteAppointmentModal h3 {
             color: #5E1F28;
             margin-top: 0;
         }
-        #deleteModal .modal-icon, #successModal .modal-icon {
+        #deleteModal .modal-icon, #successModal .modal-icon, #deleteAppointmentModal .modal-icon {
             font-size: 48px;
             color: #5E1F28;
             margin-bottom: 15px;
         }
-        #deleteModal .modal-btn, #successModal .modal-btn {
+        #deleteModal .modal-btn, #successModal .modal-btn, #deleteAppointmentModal .modal-btn {
             padding: 10px 20px;
             font-size: 16px;
             border: none;
@@ -270,16 +270,16 @@
             margin: 0 5px;
             transition: background 0.2s;
         }
-        #deleteModal .modal-btn:hover, #successModal .modal-btn:hover {
+        #deleteModal .modal-btn:hover, #successModal .modal-btn:hover, #deleteAppointmentModal .modal-btn:hover {
             background: #4A1F24;
         }
-        #deleteModal .modal-btn.danger {
+        #deleteModal .modal-btn.danger, #deleteAppointmentModal .modal-btn.danger {
             background: #fff;
             color: #5E1F28;
             border: 2px solid #5E1F28;
             transition: background 0.2s, color 0.2s, border 0.2s;
         }
-        #deleteModal .modal-btn.danger:hover {
+        #deleteModal .modal-btn.danger:hover, #deleteAppointmentModal .modal-btn.danger:hover {
             background: #5E1F28;
             color: #F0EDEA;
             border-color: #5E1F28;
@@ -306,6 +306,22 @@
             position: absolute;
             right: 40px;
             bottom: 40px;
+        }
+        .delete-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #2C0A0F;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        .delete-btn:hover {
+            color: #8B0000;
+            transform: scale(1.2);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         #authModal .modal-content {
             background: #B3A09A;
@@ -416,6 +432,20 @@
         <h3>Account Deleted</h3>
         <p style="font-size:16px; color:#333; margin-bottom:20px;">Your account has been successfully deleted. You will be redirected to the home page.</p>
         <button onclick="redirectToHome()" class="modal-btn">OK</button>
+    </div>
+</div>
+
+<!-- Delete Appointment Confirmation Modal -->
+<div id="deleteAppointmentModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div class="modal-content">
+        <div class="modal-icon">🗑️</div>
+        <h3>Delete Appointment</h3>
+        <p id="deleteAppointmentText" style="font-size:16px; color:#333; margin-bottom:10px; font-weight:bold;"></p>
+        <p style="font-size:14px; color:#666; margin-bottom:20px;">This action cannot be undone. The appointment will be permanently removed from the system.</p>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button onclick="closeDeleteAppointmentModal()" class="modal-btn">Cancel</button>
+            <button onclick="confirmDeleteAppointment()" class="modal-btn danger">Yes, Delete</button>
+        </div>
     </div>
 </div>
 
@@ -610,7 +640,11 @@ function displayAppointments(appointments, showWarning = false) {
         li.innerHTML = `
             <div class="appointment-header">
                 <div class="appointment-date-time">${dateIcon} ${dateStr} at ${timeStr}</div>
-                <div class="appointment-status status-${status}">${status}</div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="appointment-status status-${status}">${status}</div>
+                    <button onclick="deleteAppointment(${app.id}, '${dateStr}', '${timeStr}', '${app.doctor_name || 'Doctor'}')" 
+                            class="delete-btn" title="Delete Appointment">🗑️</button>
+                </div>
             </div>
             <div class="appointment-details">
                 <div class="appointment-doctor">👨‍⚕️ ${app.doctor_name || 'Doctor not specified'}</div>
@@ -742,6 +776,79 @@ async function confirmDeleteAccount() {
 
 function redirectToHome() {
     window.location.href = 'home_page.html';
+}
+
+// Global variable to store appointment ID for deletion
+let appointmentToDelete = null;
+
+// Function to initiate appointment deletion
+function deleteAppointment(appointmentId, dateStr, timeStr, doctorName) {
+    appointmentToDelete = appointmentId;
+    document.getElementById('deleteAppointmentText').innerHTML = 
+        `Are you sure you want to delete this appointment?<br><br>
+        <strong>📅 ${dateStr} at ${timeStr}</strong><br>
+        <strong>👨‍⚕️ ${doctorName}</strong>`;
+    document.getElementById('deleteAppointmentModal').style.display = 'flex';
+}
+
+// Function to close delete appointment modal
+function closeDeleteAppointmentModal() {
+    document.getElementById('deleteAppointmentModal').style.display = 'none';
+    appointmentToDelete = null;
+}
+
+// Function to confirm appointment deletion
+async function confirmDeleteAppointment() {
+    if (!appointmentToDelete) {
+        alert('Error: No appointment selected for deletion');
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:5000/api/appointments/${appointmentToDelete}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            // Close modal
+            closeDeleteAppointmentModal();
+            
+            // Show success message
+            const successMsg = document.createElement('div');
+            successMsg.textContent = '✅ Appointment deleted successfully!';
+            successMsg.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: #8B4513;
+                color: #F0EDEA;
+                padding: 10px 20px;
+                border-radius: 5px;
+                z-index: 1000;
+                font-weight: bold;
+                border: 2px solid #5E1F28;
+            `;
+            document.body.appendChild(successMsg);
+            
+            // Remove success message after 3 seconds
+            setTimeout(() => {
+                if (document.body.contains(successMsg)) {
+                    document.body.removeChild(successMsg);
+                }
+            }, 3000);
+            
+            // Reload appointments
+            loadAppointments();
+        } else {
+            const result = await response.json();
+            alert('Error deleting appointment: ' + (result.error || 'Unknown error'));
+        }
+    } catch (error) {
+        alert('Error deleting appointment: ' + error.message);
+    }
 }
 </script>
 </body>
