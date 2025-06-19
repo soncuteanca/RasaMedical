@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
-    <title>Medical Assistant</title>
+    <title>Medical Assistant - AI-Powered Healthcare Support</title>
     <style>
         body {
-            background-color: #CFC3BD; /* light creamy beige */
+            background-color: #CFC3BD;
             font-family: Arial, sans-serif;
             font-size: 16px;
             color: #2C2C2C;
             margin: 0;
+            line-height: 1.6;
         }
 
         header {
@@ -24,6 +25,7 @@
             top: 0;
             z-index: 2;
             box-sizing: border-box;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .title {
@@ -50,7 +52,7 @@
             padding: 12px 24px;
             cursor: pointer;
             text-decoration: none;
-            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
             margin: 0;
             text-align: center;
             font-weight: bold;
@@ -62,10 +64,13 @@
             background: #B3A09A;
             color: #5E1F28;
             border: 2px solid #5E1F28;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .button-chat:hover {
             background: #4A1F24;
             color: #F0EDEA;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .button-login, .button-create, .button-logout {
@@ -77,6 +82,191 @@
             background-color: #B3A09A;
             color: #5E1F28;
             border-color: #B3A09A;
+            transform: translateY(-2px);
+        }
+
+        main {
+            margin-top: 90px;
+            padding: 0;
+            background-color: #CFC3BD;
+            min-height: calc(100vh - 140px);
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, #D0C8C0 0%, #B3A09A 100%);
+            margin-bottom: 0;
+        }
+
+        .hero-title {
+            color: #5E1F28;
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .hero-subtitle {
+            color: #2C2C2C;
+            font-size: 20px;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            background: #5E1F28;
+            color: #F0EDEA;
+            padding: 16px 32px;
+            font-size: 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(94, 31, 40, 0.3);
+        }
+
+        .cta-button:hover {
+            background: #4A1F24;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(94, 31, 40, 0.4);
+        }
+
+        .features-section {
+            padding: 60px 40px;
+            background-color: #CFC3BD;
+        }
+
+        .section-title {
+            text-align: center;
+            color: #5E1F28;
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: #B3A09A;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 4px solid #5E1F28;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-title {
+            color: #5E1F28;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .feature-description {
+            color: #2C2C2C;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .stats-section {
+            background: #B3A09A;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            color: #5E1F28;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        footer {
+            background-color: #5E1F28;
+            color: #F0EDEA;
+            text-align: center;
+            padding: 30px 40px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .footer-text {
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .footer-link {
+            color: #F0EDEA;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-link:hover {
+            opacity: 0.7;
         }
 
         @media (max-width: 768px) {
@@ -91,81 +281,23 @@
                 font-size: 16px;
                 padding: 10px 20px;
             }
-            .menu-item {
-                font-size: 16px;
-                margin-right: 20px;
+            .hero-title {
+                font-size: 36px;
             }
-        }
-
-        nav {
-            width: 250px;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #B3A09A;
-            padding: 20px 0 0 0;
-            padding-top: 90px;
-            overflow-y: auto;
-        }
-
-        .menu-item {
-            display: block;
-            text-decoration: none;
-            color: #2C2C2C;
-            font-size: 18px;
-            font-weight: bold;
-            padding: 15px;
-            margin: 10px 20px;
-            border-radius: 8px;
-            transition: background 0.2s, color 0.2s;
-        }
-
-        .menu-item:hover, .menu-item.active {
-            background: #722F37;
-            color: #F0EDEA;
-        }
-
-        main {
-            margin-left: 250px;
-            margin-top: 90px;
-            padding: 20px;
-            background-color: #CFC3BD;
-        }
-
-        main h2 {
-            color: #5E1F28;
-            font-size: 36px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-            border-bottom: 3px solid #5E1F28;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-        main h3 {
-            color: #5E1F28;
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-
-        main p {
-            color: #2C2C2C;
-        }
-
-        footer {
-            background-color: #5E1F28;
-            color: #F0EDEA;
-            text-align: center;
-            padding: 10px 20px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            box-sizing: border-box;
+            .hero-subtitle {
+                font-size: 18px;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
         }
     </style>
 </head>
@@ -181,24 +313,109 @@
     </div>
 </header>
 
-<nav>
-    <a class="menu-item" href="#">Home</a>
-    <a class="menu-item" href="#">About Us</a>
-    <a class="menu-item" href="#">Our Services</a>
-    <a class="menu-item" href="#">Patient Testimonials</a>
-</nav>
-
 <main>
-    <h2>Welcome to Medical Assistant</h2>
-    <p>Your health is our utmost priority. We strive to provide the best medical services tailored to your needs.</p>
-    <h3>Our Services</h3>
-    <p>We offer a range of medical services from general checkups to specialized treatments.</p>
-    <h3>Patient Testimonials</h3>
-    <p>Read about the experiences of our valued patients and their journey to health and well-being with us.</p>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <h1 class="hero-title">AI-Powered Cardiology Assistant</h1>
+        <p class="hero-subtitle">
+            Specialized cardiology support with instant heart health guidance, appointment management, 
+            and secure medical records. Your dedicated cardiac care companion, available 24/7.
+        </p>
+        <a href="#" class="cta-button" onclick="handleChatClick(event)">Start Your Health Journey</a>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <h2 class="section-title">How We Help You</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">❤️</span>
+                <h3 class="feature-title">Cardiology Expertise</h3>
+                <p class="feature-description">
+                    Specialized AI trained in cardiovascular medicine, providing expert guidance on 
+                    heart health, symptoms, and cardiac care recommendations.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🤖</span>
+                <h3 class="feature-title">Intelligent Chat Assistant</h3>
+                <p class="feature-description">
+                    Get instant answers to cardiac questions and receive personalized heart health guidance 
+                    from our AI-powered assistant trained on cardiology knowledge.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">📅</span>
+                <h3 class="feature-title">Cardiology Appointments</h3>
+                <p class="feature-description">
+                    Schedule consultations with cardiologists, manage follow-up visits, and receive 
+                    automated reminders for your cardiac care appointments.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">📋</span>
+                <h3 class="feature-title">Cardiac Records & Reports</h3>
+                <p class="feature-description">
+                    Securely store ECGs, echo reports, stress tests, and cardiac imaging results 
+                    all in one HIPAA-compliant location.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">⏰</span>
+                <h3 class="feature-title">24/7 Heart Health Support</h3>
+                <p class="feature-description">
+                    Access cardiac support anytime for urgent questions about chest pain, 
+                    heart palpitations, or medication concerns.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">👨‍⚕️</span>
+                <h3 class="feature-title">Cardiologist Integration</h3>
+                <p class="feature-description">
+                    Seamlessly connect with cardiac specialists and share your symptom history 
+                    for more informed cardiology consultations.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <h2 class="section-title" style="color: #5E1F28; margin-bottom: 40px;">Trusted Cardiology Support</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label">Heart Health Support</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">100%</span>
+                <span class="stat-label">HIPAA Compliant</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">Instant</span>
+                <span class="stat-label">Expert Responses</span>
+            </div>
+        </div>
+    </section>
 </main>
 
 <footer>
-    <p>&copy; 2025 Medical Assistant. All rights reserved.</p>
+    <div class="footer-content">
+        <div class="footer-title">Medical Assistant</div>
+        <p class="footer-text">Your trusted AI-powered healthcare companion</p>
+        <div class="footer-links">
+            <a href="#" class="footer-link">Privacy Policy</a>
+            <a href="#" class="footer-link">Terms of Service</a>
+            <a href="#" class="footer-link">HIPAA Compliance</a>
+            <a href="#" class="footer-link">Contact Support</a>
+        </div>
+        <p>&copy; 2025 Medical Assistant. All rights reserved.</p>
+    </div>
 </footer>
 
 <!-- Authentication Modal -->
