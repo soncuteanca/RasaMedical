@@ -143,14 +143,34 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .back-button {
-            color: #F0EDEA;
-            text-decoration: none;
-            font-weight: bold;
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
-        .back-button:hover {
-            color: #D4B4B4;
+        .nav-link {
+            min-width: 120px;
+            border-radius: 12px;
+            font-size: 18px;
+            padding: 12px 24px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin: 0;
+            text-align: center;
+            font-weight: bold;
+            border: 2px solid #4A1F24;
+            box-sizing: border-box;
+            background-color: #4A1F24;
+            color: #F0EDEA;
+        }
+
+        .nav-link:hover {
+            background-color: #B3A09A;
+            color: #5E1F28;
+            border-color: #B3A09A;
+            transform: translateY(-2px);
         }
 
         footer {
@@ -172,7 +192,10 @@
 <body>
 <div class="header">
     <h2>Chat with Medical Assistant</h2>
-    <a href="home_page.html" class="back-button">← Back to Home</a>
+    <div class="header-nav">
+        <a href="user.html" class="nav-link" id="userProfileLink">My Profile</a>
+        <a href="home_page.html" class="nav-link">← Back to Home</a>
+    </div>
 </div>
 
 <div class="chat-container">
@@ -278,6 +301,25 @@
         // Stop script execution if not authenticated
         throw new Error('Authentication required');
     }
+
+    // Update user profile link with user's name
+    function updateUserProfileLink() {
+        const user = localStorage.getItem('user');
+        if (user) {
+            try {
+                const userObj = JSON.parse(user);
+                const profileLink = document.getElementById('userProfileLink');
+                if (userObj.name && profileLink) {
+                    profileLink.textContent = userObj.name;
+                }
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+            }
+        }
+    }
+
+    // Update the profile link when page loads
+    updateUserProfileLink();
 
     const socketUrl = "http://localhost:5005";
     const socket = io.connect(socketUrl, {path: "/socket.io/"});
