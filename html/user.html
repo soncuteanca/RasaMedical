@@ -772,14 +772,6 @@ function displayMedicalRecords(records) {
                 day: 'numeric'
             });
             
-            // Add a mock time for records (since medical records typically don't have specific times)
-            // Use creation time or default to a standard time
-            const timeStr = rec.created_at ? 
-                new Date(rec.created_at).toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                }) : '12:00 PM';
-            
             // Use calendar icon like appointments (📅) instead of record-specific icons
             const dateIcon = '📅';
             
@@ -787,19 +779,21 @@ function displayMedicalRecords(records) {
             const status = rec.record_type.replace('_', ' ').toUpperCase();
             
             li.innerHTML = `
-                <div class="appointment-header" onclick="toggleRecord(${rec.id})" style="cursor: pointer;">
-                    <div class="appointment-date-time">${dateIcon} ${dateStr} at ${timeStr}</div>
+                <div class="appointment-header">
+                    <div style="font-size: 14px; color: #666;">${dateIcon} ${dateStr}</div>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <div class="appointment-status status-${rec.record_type}">${status}</div>
-                        <button onclick="event.stopPropagation(); deleteRecord(${rec.id}, '${rec.title}', '${dateStr}')" 
+                        <button onclick="deleteRecord(${rec.id}, '${rec.title}', '${dateStr}')" 
                                 class="delete-btn" title="Delete Record">🗑️</button>
-                        <div id="expand-icon-${rec.id}" style="font-size: 12px; color: #666;">▼</div>
                     </div>
                 </div>
                 <div class="appointment-details">
-                    <div class="appointment-reason" style="font-weight: bold;">📋 ${rec.title}</div>
+                    <div class="appointment-reason" onclick="toggleRecord(${rec.id})" style="font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 5px; color: #5E1F28;">
+                        📋 ${rec.title}
+                        <div id="expand-icon-${rec.id}" style="font-size: 12px; color: #666;">▼</div>
+                    </div>
                     <div style="font-size: 12px; color: #666; margin-top: 2px;">👨‍⚕️ ${rec.doctor_name || 'Doctor not specified'}</div>
-                    <div id="record-details-${rec.id}" style="display: none; margin-top: 10px; padding: 10px; background: #F5F5F5; border-radius: 5px; border-left: 3px solid #8B4513;">
+                    <div id="record-details-${rec.id}" style="display: none; margin-top: 10px; padding: 10px; background: #B3A09A; border-radius: 5px; border-left: 3px solid #8B4513;">
                         ${rec.description ? `<div style="color: #333; font-size: 14px;"><strong>Details:</strong><br/>${rec.description}</div>` : '<div style="color: #666; font-style: italic;">No additional details available.</div>'}
                     </div>
                 </div>
@@ -873,6 +867,20 @@ async function confirmDeleteAccount() {
 
 function redirectToHome() {
     window.location.href = 'home_page.html';
+}
+
+// Toggle record details function
+function toggleRecord(recordId) {
+    const details = document.getElementById(`record-details-${recordId}`);
+    const icon = document.getElementById(`expand-icon-${recordId}`);
+    
+    if (details.style.display === 'none') {
+        details.style.display = 'block';
+        icon.textContent = '▲';
+    } else {
+        details.style.display = 'none';
+        icon.textContent = '▼';
+    }
 }
 
 // Global variables for deletion
