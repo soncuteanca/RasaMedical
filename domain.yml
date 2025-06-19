@@ -29,6 +29,8 @@ intents:
   - provide_time
   - provide_doctor
   - provide_reason
+  - view_medical_records
+  - add_medical_record
 
 
 entities:
@@ -142,6 +144,9 @@ responses:
   utter_ask_reason:
       - text: "What's the reason for your visit?"
 
+  utter_medical_records_help:
+    - text: "I can help you view your medical records or add new ones. What would you like to do?"
+
 actions:
   - action_greet_user
   - action_list_doctors
@@ -155,6 +160,7 @@ actions:
   - action_view_appointments
   - action_submit_appointment_form
   - validate_appointment_form
+  - action_view_medical_records
 
 
 

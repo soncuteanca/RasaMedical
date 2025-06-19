@@ -249,7 +249,7 @@
             background: #4A1F24;
             color: #F0EDEA;
         }
-        #deleteModal .modal-content, #successModal .modal-content, #deleteAppointmentModal .modal-content {
+        #deleteModal .modal-content, #successModal .modal-content, #deleteAppointmentModal .modal-content, #deleteRecordModal .modal-content {
             background: #B3A09A;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(114, 47, 55, 0.25);
@@ -258,16 +258,16 @@
             border-top: 4px solid #5E1F28;
             padding: 30px 40px;
         }
-        #deleteModal h3, #successModal h3, #deleteAppointmentModal h3 {
+        #deleteModal h3, #successModal h3, #deleteAppointmentModal h3, #deleteRecordModal h3 {
             color: #5E1F28;
             margin-top: 0;
         }
-        #deleteModal .modal-icon, #successModal .modal-icon, #deleteAppointmentModal .modal-icon {
+        #deleteModal .modal-icon, #successModal .modal-icon, #deleteAppointmentModal .modal-icon, #deleteRecordModal .modal-icon {
             font-size: 48px;
             color: #5E1F28;
             margin-bottom: 15px;
         }
-        #deleteModal .modal-btn, #successModal .modal-btn, #deleteAppointmentModal .modal-btn {
+        #deleteModal .modal-btn, #successModal .modal-btn, #deleteAppointmentModal .modal-btn, #deleteRecordModal .modal-btn {
             padding: 10px 20px;
             font-size: 16px;
             border: none;
@@ -279,16 +279,16 @@
             margin: 0 5px;
             transition: background 0.2s;
         }
-        #deleteModal .modal-btn:hover, #successModal .modal-btn:hover, #deleteAppointmentModal .modal-btn:hover {
+        #deleteModal .modal-btn:hover, #successModal .modal-btn:hover, #deleteAppointmentModal .modal-btn:hover, #deleteRecordModal .modal-btn:hover {
             background: #4A1F24;
         }
-        #deleteModal .modal-btn.danger, #deleteAppointmentModal .modal-btn.danger {
+        #deleteModal .modal-btn.danger, #deleteAppointmentModal .modal-btn.danger, #deleteRecordModal .modal-btn.danger {
             background: #fff;
             color: #5E1F28;
             border: 2px solid #5E1F28;
             transition: background 0.2s, color 0.2s, border 0.2s;
         }
-        #deleteModal .modal-btn.danger:hover, #deleteAppointmentModal .modal-btn.danger:hover {
+        #deleteModal .modal-btn.danger:hover, #deleteAppointmentModal .modal-btn.danger:hover, #deleteRecordModal .modal-btn.danger:hover {
             background: #5E1F28;
             color: #F0EDEA;
             border-color: #5E1F28;
@@ -454,6 +454,20 @@
         <div style="display:flex; gap:10px; justify-content:center;">
             <button onclick="closeDeleteAppointmentModal()" class="modal-btn">Cancel</button>
             <button onclick="confirmDeleteAppointment()" class="modal-btn danger">Yes, Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Medical Record Confirmation Modal -->
+<div id="deleteRecordModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div class="modal-content">
+        <div class="modal-icon">🗑️</div>
+        <h3>Delete Medical Record</h3>
+        <p id="deleteRecordText" style="font-size:16px; color:#333; margin-bottom:10px; font-weight:bold;"></p>
+        <p style="font-size:14px; color:#666; margin-bottom:20px;">This action cannot be undone. The medical record will be permanently removed from the system.</p>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button onclick="closeDeleteRecordModal()" class="modal-btn">Cancel</button>
+            <button onclick="confirmDeleteRecord()" class="modal-btn danger">Yes, Delete</button>
         </div>
     </div>
 </div>
@@ -721,25 +735,100 @@ function manageAppointments() {
 // Initial load of appointments
 loadAppointments();
 
-// Fetch medical records
-fetch(`http://localhost:5000/api/records?user_id=${userObj.id}`)
-    .then(res => res.json())
-    .then(data => {
-        const list = document.getElementById('recordList');
-        list.innerHTML = '';
-        if (Array.isArray(data) && data.length > 0) {
-            data.forEach(rec => {
-                const li = document.createElement('li');
-                li.textContent = `Diagnosis: ${rec.diagnosis} | Treatment: ${rec.treatment}`;
-                list.appendChild(li);
+// Load medical records function
+function loadMedicalRecords() {
+    return fetch(`http://localhost:5000/api/records?user_id=${userObj.id}`)
+        .then(res => res.json())
+        .then(data => {
+            displayMedicalRecords(data);
+        })
+        .catch(error => {
+            console.error('Error fetching medical records:', error);
+            const list = document.getElementById('recordList');
+            list.innerHTML = '<li class="empty-msg">Failed to load medical records. Please try refreshing the page.</li>';
+        });
+}
+
+// Function to display medical records (matching appointment style EXACTLY)
+function displayMedicalRecords(records) {
+    const list = document.getElementById('recordList');
+    list.innerHTML = '';
+    
+    if (Array.isArray(records) && records.length > 0) {
+        // Sort records by date (newest first)
+        records.sort((a, b) => new Date(b.record_date) - new Date(a.record_date));
+        
+        records.forEach(rec => {
+            const li = document.createElement('li');
+            // Use same class structure as appointments
+            li.className = `appointment-${rec.record_type}`;
+            
+            // Format date EXACTLY like appointments (with time component)
+            const recordDate = new Date(rec.record_date);
+            const dateStr = recordDate.toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
             });
-        } else {
-            list.innerHTML = '<li class="empty-msg">No medical records found.</li>';
-        }
-    })
-    .catch(() => {
-        document.getElementById('recordList').innerHTML = '<li class="empty-msg">Failed to load medical records.</li>';
-    });
+            
+            // Add a mock time for records (since medical records typically don't have specific times)
+            // Use creation time or default to a standard time
+            const timeStr = rec.created_at ? 
+                new Date(rec.created_at).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) : '12:00 PM';
+            
+            // Use calendar icon like appointments (📅) instead of record-specific icons
+            const dateIcon = '📅';
+            
+            // Format status exactly like appointments (readable format)
+            const status = rec.record_type.replace('_', ' ').toUpperCase();
+            
+            li.innerHTML = `
+                <div class="appointment-header" onclick="toggleRecord(${rec.id})" style="cursor: pointer;">
+                    <div class="appointment-date-time">${dateIcon} ${dateStr} at ${timeStr}</div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="appointment-status status-${rec.record_type}">${status}</div>
+                        <button onclick="event.stopPropagation(); deleteRecord(${rec.id}, '${rec.title}', '${dateStr}')" 
+                                class="delete-btn" title="Delete Record">🗑️</button>
+                        <div id="expand-icon-${rec.id}" style="font-size: 12px; color: #666;">▼</div>
+                    </div>
+                </div>
+                <div class="appointment-details">
+                    <div class="appointment-reason" style="font-weight: bold;">📋 ${rec.title}</div>
+                    <div style="font-size: 12px; color: #666; margin-top: 2px;">👨‍⚕️ ${rec.doctor_name || 'Doctor not specified'}</div>
+                    <div id="record-details-${rec.id}" style="display: none; margin-top: 10px; padding: 10px; background: #F5F5F5; border-radius: 5px; border-left: 3px solid #8B4513;">
+                        ${rec.description ? `<div style="color: #333; font-size: 14px;"><strong>Details:</strong><br/>${rec.description}</div>` : '<div style="color: #666; font-style: italic;">No additional details available.</div>'}
+                    </div>
+                </div>
+            `;
+            list.appendChild(li);
+        });
+    } else {
+        showEmptyRecordsState();
+    }
+}
+
+// Function to show empty state for records
+function showEmptyRecordsState() {
+    const list = document.getElementById('recordList');
+    list.innerHTML = `
+        <li class="empty-msg">
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 48px; margin-bottom: 10px; color: #5E1F28;">📋</div>
+                <div style="font-size: 18px; margin-bottom: 10px;">No medical records found</div>
+                <div style="font-size: 14px; color: #666; margin-bottom: 15px;">
+                    Records will appear here after your appointments and consultations.
+                </div>
+            </div>
+        </li>
+    `;
+}
+
+// Load medical records on page load
+loadMedicalRecords();
 
 // Add delete account functionality
 document.getElementById('deleteAccountBtn').addEventListener('click', function(event) {
@@ -786,8 +875,9 @@ function redirectToHome() {
     window.location.href = 'home_page.html';
 }
 
-// Global variable to store appointment ID for deletion
+// Global variables for deletion
 let appointmentToDelete = null;
+let recordToDelete = null;
 
 // Function to initiate appointment deletion
 function deleteAppointment(appointmentId, dateStr, timeStr, doctorName) {
@@ -799,10 +889,26 @@ function deleteAppointment(appointmentId, dateStr, timeStr, doctorName) {
     document.getElementById('deleteAppointmentModal').style.display = 'flex';
 }
 
+// Function to initiate medical record deletion
+function deleteRecord(recordId, title, dateStr) {
+    recordToDelete = recordId;
+    document.getElementById('deleteRecordText').innerHTML = 
+        `Are you sure you want to delete this medical record?<br><br>
+        <strong>📋 ${title}</strong><br>
+        <strong>📅 ${dateStr}</strong>`;
+    document.getElementById('deleteRecordModal').style.display = 'flex';
+}
+
 // Function to close delete appointment modal
 function closeDeleteAppointmentModal() {
     document.getElementById('deleteAppointmentModal').style.display = 'none';
     appointmentToDelete = null;
+}
+
+// Function to close delete record modal
+function closeDeleteRecordModal() {
+    document.getElementById('deleteRecordModal').style.display = 'none';
+    recordToDelete = null;
 }
 
 // Function to confirm appointment deletion
@@ -856,6 +962,60 @@ async function confirmDeleteAppointment() {
         }
     } catch (error) {
         alert('Error deleting appointment: ' + error.message);
+    }
+}
+
+// Function to confirm medical record deletion
+async function confirmDeleteRecord() {
+    if (!recordToDelete) {
+        alert('Error: No record selected for deletion');
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:5000/api/records/${recordToDelete}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            // Close modal
+            closeDeleteRecordModal();
+            
+            // Show success message
+            const successMsg = document.createElement('div');
+            successMsg.textContent = '✅ Medical record deleted successfully!';
+            successMsg.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: #8B4513;
+                color: #F0EDEA;
+                padding: 10px 20px;
+                border-radius: 5px;
+                z-index: 1000;
+                font-weight: bold;
+                border: 2px solid #5E1F28;
+            `;
+            document.body.appendChild(successMsg);
+            
+            // Remove success message after 3 seconds
+            setTimeout(() => {
+                if (document.body.contains(successMsg)) {
+                    document.body.removeChild(successMsg);
+                }
+            }, 3000);
+            
+            // Reload medical records
+            loadMedicalRecords();
+        } else {
+            const result = await response.json();
+            alert('Error deleting medical record: ' + (result.error || 'Unknown error'));
+        }
+    } catch (error) {
+        alert('Error deleting medical record: ' + error.message);
     }
 }
 </script>

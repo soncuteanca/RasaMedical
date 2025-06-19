@@ -529,4 +529,28 @@ nlu:
       - [tiredness](reason)
       - [weakness](reason)
 
+  - intent: view_medical_records
+    examples: |
+      - show me my medical records
+      - view my medical history
+      - I want to see my records
+      - can I check my medical records
+      - what are my medical records
+      - show medical history
+      - view records
+      - my medical file
+      - check my health records
+      - medical records please
+
+  - intent: add_medical_record
+    examples: |
+      - add a medical record
+      - I want to add a record
+      - create new medical record
+      - add to my medical history
+      - record new medical information
+      - add medical note
+      - I need to add a record
+      - create medical entry
+
 

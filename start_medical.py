@@ -2,6 +2,11 @@ import subprocess
 import time
 import os
 
+# Set environment variables to silence SQLAlchemy warnings
+os.environ['SQLALCHEMY_SILENCE_UBER_WARNING'] = '1'
+os.environ['SQLALCHEMY_WARN_20'] = '0'
+print("✅ SQLAlchemy warnings silenced")
+
 # Create and run a temporary .bat file to kill ports
 bat_script = """
 @echo off

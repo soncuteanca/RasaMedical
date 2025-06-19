@@ -109,8 +109,18 @@ def handle_records():
     if request.method == 'POST':
         try:
             data = request.json
-            query = "INSERT INTO medical_records (patient_id, diagnosis, treatment) VALUES (%s, %s, %s)"
-            params = (data['patient_id'], data['diagnosis'], data['treatment'])
+            query = """
+                INSERT INTO medical_records (patient_id, doctor_id, record_type, title, description, record_date) 
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            params = (
+                data['patient_id'], 
+                data.get('doctor_id'), 
+                data.get('record_type', 'note'), 
+                data['title'], 
+                data.get('description', ''), 
+                data['record_date']
+            )
             db_manager.execute_query(query, params, fetch=False)
             return jsonify({'message': 'Medical record added successfully'}), 201
         except Exception as e:
@@ -118,12 +128,50 @@ def handle_records():
             return jsonify({'error': str(e)}), 500
     else:
         try:
-            query = "SELECT * FROM medical_records"
-            results = db_manager.execute_query(query)
+            user_id = request.args.get('user_id')
+            if user_id:
+                query = """
+                    SELECT mr.*, d.name as doctor_name 
+                    FROM medical_records mr 
+                    LEFT JOIN doctors d ON mr.doctor_id = d.id 
+                    WHERE mr.patient_id = %s 
+                    ORDER BY mr.record_date DESC, mr.created_at DESC
+                """
+                results = db_manager.execute_query(query, (user_id,))
+            else:
+                query = """
+                    SELECT mr.*, d.name as doctor_name, 
+                           u.first_name, u.last_name
+                    FROM medical_records mr 
+                    LEFT JOIN doctors d ON mr.doctor_id = d.id 
+                    LEFT JOIN users u ON mr.patient_id = u.id
+                    ORDER BY mr.record_date DESC, mr.created_at DESC
+                """
+                results = db_manager.execute_query(query)
             return jsonify(results)
         except Exception as e:
             logger.error(f"Error fetching records: {str(e)}")
             return jsonify({'error': str(e)}), 500
+
+@app.route('/api/records/<int:record_id>', methods=['DELETE'])
+def delete_record(record_id):
+    try:
+        # First check if the record exists
+        check_query = "SELECT id FROM medical_records WHERE id = %s"
+        result = db_manager.execute_query(check_query, (record_id,))
+        
+        if not result:
+            return jsonify({'error': 'Medical record not found'}), 404
+        
+        # Delete the record
+        delete_query = "DELETE FROM medical_records WHERE id = %s"
+        db_manager.execute_query(delete_query, (record_id,), fetch=False)
+        
+        logger.info(f"Medical record {record_id} deleted successfully")
+        return jsonify({'message': 'Medical record deleted successfully'}), 200
+    except Exception as e:
+        logger.error(f"Error deleting medical record: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/users', methods=['POST'])
 def create_user():

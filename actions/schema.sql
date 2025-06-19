@@ -38,3 +38,18 @@ CREATE TABLE appointments (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (doctor_id) REFERENCES doctors(id)
 );
+
+-- Create medical_records table
+CREATE TABLE medical_records (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id INT NOT NULL,
+    doctor_id INT,
+    record_type ENUM('diagnosis', 'treatment', 'test_result', 'prescription', 'note') DEFAULT 'note',
+    title VARCHAR(200) NOT NULL,
+    description TEXT,
+    record_date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (patient_id) REFERENCES users(id),
+    FOREIGN KEY (doctor_id) REFERENCES doctors(id)
+);
