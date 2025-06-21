@@ -30,7 +30,6 @@ intents:
   - provide_doctor
   - provide_reason
   - view_medical_records
-  - add_medical_record
 
 
 entities:
@@ -142,15 +141,15 @@ responses:
     - text: "Which doctor would you like to see?"
 
   utter_ask_reason:
-      - text: "What's the reason for your visit?"
+    - text: "What's the reason for your visit?"
 
-  utter_medical_records_help:
-    - text: "I can help you view your medical records or add new ones. What would you like to do?"
+
 
 actions:
   - action_greet_user
   - action_list_doctors
   - action_list_doctors_by_specialty
+  - action_select_doctor
   - action_list_procedures
   - action_list_tests
   - action_list_prices

@@ -1,6 +1,7 @@
 from typing import Dict, Text, Any, List
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
+from rasa_sdk.events import SlotSet, FollowupAction
 from actions.db_connect import db_manager
 
 
@@ -36,6 +37,76 @@ class ActionListDoctors(Action):
         except Exception as e:
             dispatcher.utter_message(text=f"Sorry, I encountered an error while fetching doctors: {str(e)}")
 
+        return []
+
+
+class ActionSelectDoctor(Action):
+    def name(self) -> Text:
+        return "action_select_doctor"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        try:
+            # Get doctor name from entity or message text
+            doctor_name = None
+            entities = tracker.latest_message.get("entities", [])
+            
+            # Look for doctor_name entity
+            for entity in entities:
+                if entity["entity"] == "doctor_name":
+                    doctor_name = entity["value"]
+                    break
+            
+            # If no entity, try to extract from message text
+            if not doctor_name:
+                message_text = tracker.latest_message.get("text", "").strip()
+                doctor_name = message_text
+            
+            print(f"DEBUG: Looking for doctor: '{doctor_name}'")
+            
+            if doctor_name:
+                # Try to find the doctor in database
+                query = """
+                    SELECT name, specialty
+                    FROM doctors
+                    WHERE name LIKE %s OR name LIKE %s
+                    ORDER BY name
+                """
+                
+                # Try both with and without Dr. prefix
+                search_patterns = [f"%{doctor_name}%", f"%Dr. {doctor_name}%"]
+                results = db_manager.execute_query(query, search_patterns)
+                
+                if results:
+                    doctor = results[0]  # Take the first match
+                    response = f"You selected {doctor['name']} from {doctor['specialty']}.\n\nWould you like to book an appointment?"
+                    dispatcher.utter_message(text=response)
+                    # Set the doctor slot for potential appointment booking
+                    return [SlotSet("doctor_name", doctor['name'])]
+                else:
+                    # Doctor not found, show available doctors
+                    dispatcher.utter_message(text=f"I couldn't find a doctor named '{doctor_name}'. Here are our available doctors:")
+                    # Fall back to listing all doctors
+                    all_doctors_query = "SELECT name, specialty FROM doctors ORDER BY specialty, name"
+                    all_results = db_manager.execute_query(all_doctors_query)
+                    
+                    if all_results:
+                        response_lines = []
+                        current_specialty = None
+                        for doc in all_results:
+                            if doc['specialty'] != current_specialty:
+                                current_specialty = doc['specialty']
+                                if len(response_lines) > 0:
+                                    response_lines.append("")
+                                response_lines.append(f"{current_specialty}:")
+                            response_lines.append(f"• {doc['name']}")
+                        response = "\n".join(response_lines)
+                        dispatcher.utter_message(text=response)
+            else:
+                dispatcher.utter_message(text="Please specify which doctor you'd like to see.")
+            
+        except Exception as e:
+            dispatcher.utter_message(text=f"Sorry, I encountered an error: {str(e)}")
+        
         return []
 
 

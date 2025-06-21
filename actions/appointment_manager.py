@@ -299,9 +299,12 @@ class AppointmentManager:
             time_str = appointment["appointment_date"].strftime("%H:%M") if appointment["appointment_date"] else "Unknown time"
             doctor_name = appointment["doctor_name"] if appointment["doctor_name"] else "Unknown doctor"
             
+            # Format doctor name properly
+            formatted_doctor = doctor_name if doctor_name.startswith('Dr.') else f"Dr. {doctor_name}"
+            
             return {
                 "success": True,
-                "message": f"✅ Appointment cancelled successfully!\n📅 Was: {date_str} at {time_str}\n👨‍⚕️ Dr. {doctor_name}"
+                "message": f"✅ Appointment cancelled successfully!\n📅 Was: {date_str} at {time_str}\n👨‍⚕️ {formatted_doctor}"
             }
             
         except Exception as e:
@@ -477,6 +480,17 @@ class AppointmentManager:
                 
                 return f"{hours:02d}:{minutes:02d}"
             
+            # Pattern 4: "14.30", "16.00" (dot format)
+            match = re.match(r'^(\d{1,2})\.(\d{2})$', time_input)
+            if match:
+                hours = int(match.group(1))
+                minutes = int(match.group(2))
+                
+                if not (0 <= hours <= 23) or not (0 <= minutes <= 59):
+                    raise ValueError(f"Invalid time: {hours}:{minutes}")
+                
+                return f"{hours:02d}:{minutes:02d}"
+            
             raise ValueError(f"Invalid time format: {time_input}")
             
         except Exception as e:
@@ -566,9 +580,12 @@ class AppointmentManager:
             time_str = updated_appointment["appointment_date"].strftime("%H:%M") if updated_appointment["appointment_date"] else "Unknown time"
             doctor_name = updated_appointment["doctor_name"] if updated_appointment["doctor_name"] else "Unknown doctor"
             
+            # Format doctor name properly
+            formatted_doctor = doctor_name if doctor_name.startswith('Dr.') else f"Dr. {doctor_name}"
+            
             return {
                 "success": True,
-                "message": f"✅ Appointment updated successfully!\n📅 {date_str} at {time_str}\n👨‍⚕️ Dr. {doctor_name}\n📝 Reason: {updated_appointment['reason']}"
+                "message": f"✅ Appointment updated successfully!\n📅 {date_str} at {time_str}\n👨‍⚕️ {formatted_doctor}\n📝 Reason: {updated_appointment['reason']}"
             }
             
         except Exception as e:

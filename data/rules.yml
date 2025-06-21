@@ -73,10 +73,12 @@ rules:
       - intent: emergency_intent
       - action: utter_emergency
 
-  - rule: User agrees to proceed
+  - rule: User agrees to proceed with symptoms
     steps:
       - intent: affirm
       - action: utter_list_specialists
+
+
 
   - rule: Activate appointment form when needed
     steps:
@@ -146,3 +148,22 @@ rules:
     steps:
       - intent: view_appointments
       - action: action_view_appointments
+
+  - rule: Handle doctor selection by name
+    steps:
+      - intent: provide_doctor
+      - action: action_select_doctor
+
+  - rule: Handle specialty-based doctor requests
+    steps:
+      - intent: ask_doctors_by_specialty
+      - action: action_list_doctors_by_specialty
+
+  - rule: User confirms appointment booking after doctor selection
+    condition:
+      - slot_was_set:
+        - doctor_name
+    steps:
+      - intent: affirm
+      - action: appointment_form
+      - active_loop: appointment_form

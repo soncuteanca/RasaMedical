@@ -108,6 +108,7 @@ nlu:
       - Clinic address?
       - Where are you based?
       - Send me directions
+      - Location
 
 
   - intent: ask_working_hours_intent
@@ -127,6 +128,8 @@ nlu:
       - Are you closed on holidays?
       - Hours
       - Timetable
+      - Working hours
+      - working hours
 
 
   - intent: ask_services_intent
@@ -136,24 +139,30 @@ nlu:
       - Can you tell me about your services?
       - What procedures do you perform?
       - What treatments are available?
+      - What medical services do you have?
+      - Tell me about your cardiology services
+      - What heart treatments do you offer?
+      - Services
+
 
   - intent: list_doctors
     examples: |
-          - Show me all doctors
-          - List all available doctors
-          - Who works there?
-          - Can I get the doctor list?
-          - I'd like to see your doctors
-          - Who are the doctors on staff?
-          - Which specialists do you have?
-          - Display the doctor names
-          - Give me all the doctors
-          - I'd like a list of your doctors
-          - What doctors are available?
-          - List the physicians
-          - Can you show all doctors?
-          - Tell me who your doctors are
-          - Available doctors?
+      - Show me all doctors
+      - List all available doctors
+      - Who works there?
+      - Can I get the doctor list?
+      - I'd like to see your doctors
+      - Who are the doctors on staff?
+      - Which specialists do you have?
+      - Display the doctor names
+      - Give me all the doctors
+      - I'd like a list of your doctors
+      - What doctors are available?
+      - List the physicians
+      - Can you show all doctors?
+      - Tell me who your doctors are
+      - Available doctors?
+      - Doctors
 
 
   - intent: ask_contact_intent
@@ -191,6 +200,8 @@ nlu:
       - Paid or free parking?
       - How's the parking situation?
       - Can I leave my car there?
+      - Parking
+      - Parcking
 
 
   - intent: ask_insurance_intent
@@ -229,7 +240,7 @@ nlu:
       - chest pain
       - pain in chest
       - chest discomfort
-
+      - I feel dizzy
 
   - intent: affirm
     examples: |
@@ -276,6 +287,8 @@ nlu:
       - [cardiovascular](specialty)
       - [surgery](specialty)
       - [surgeons](specialty)
+      - [adult cardiology](specialty)
+      - [pediatric cardiology](specialty)
       - [Adult Cardiologists](specialty)
       - [Pediatric Cardiologists](specialty)
       - [Cardiovascular Surgeons](specialty)
@@ -312,6 +325,7 @@ nlu:
       - Please help, it's an emergency
       - Emergency
       - Help
+      - I think i have an heart attack
 
   - intent: list_procedures
     examples: |
@@ -384,6 +398,7 @@ nlu:
       - What are your surgery fees?
       - Price for an ECG?
       - How much is a test?
+      - prices
 
   - intent: book_appointment
     examples: |
@@ -400,6 +415,14 @@ nlu:
       - Schedule appointment
       - Book me an appointment
       - I need an appointment
+      - Book an appointment
+      - I want to book an appointment
+      - book an appointment
+      - appointment
+      - Schedule an appointment
+      - Make an appointment
+      - Set up an appointment
+      - Can I book an appointment
 
   - intent: modify_appointment
     examples: |
@@ -441,7 +464,7 @@ nlu:
       - What appointments do I have?
       - List my upcoming appointments
       - Do I have any appointments on [Friday](date)?
-      - Show appoitment
+      - Show appointment
       - Show appointments
       - List my appointments
       - View my appointments
@@ -458,6 +481,7 @@ nlu:
       - Show scheduled appointments
       - List upcoming appointments
       - View scheduled appointments
+      - Appointment
 
   - intent: provide_date
     examples: |
@@ -472,6 +496,8 @@ nlu:
       - [tommorow](date)
       - [next monday](date)
       - [next friday](date)
+      - [Friday](date)
+      - [14.06](date)
 
   - intent: provide_time
     examples: |
@@ -489,6 +515,7 @@ nlu:
       - [four](time)
       - [15:00](time)
       - [3:00](time)
+      - [1pm](time)
 
   - intent: provide_doctor
     examples: |
@@ -497,11 +524,46 @@ nlu:
       - [Dr. Johnson](doctor_name)
       - [Johnson](doctor_name)
       - [Dr. Brown](doctor_name)
+      - [Dr. Demir](doctor_name)
+      - [Demir](doctor_name)
+      - [Dr. Ahmet Demir](doctor_name)
+      - [Ahmet Demir](doctor_name)
+      - [Dr. Sarah Johnson](doctor_name)
+      - [Sarah Johnson](doctor_name)
+      - [Dr. John Smith](doctor_name)
+      - [John Smith](doctor_name)
+      - [Dr. Emily Chen](doctor_name)
+      - [Emily Chen](doctor_name)
+      - [Chen](doctor_name)
+      - [Dr. Elif Kaya](doctor_name)
+      - [Elif Kaya](doctor_name)
+      - [Kaya](doctor_name)
+      - [Dr. James Miller](doctor_name)
+      - [James Miller](doctor_name)
+      - [Miller](doctor_name)
       - Can I see [Dr. Johnson](doctor_name) instead?
       - I'd like to see [Dr. Johnson](doctor_name)
       - Change to [Dr. Johnson](doctor_name)
       - Switch to [Dr. Johnson](doctor_name)
       - I want [Dr. Johnson](doctor_name) instead
+      - I want to see [Demir](doctor_name)
+      - I'll take [Smith](doctor_name)
+      - Book me with [Dr. Demir](doctor_name)
+      - [Demir](doctor_name)
+      - [Johnson](doctor_name)
+      - [Smith](doctor_name)
+      - I want [Johnson](doctor_name)
+      - I'll see [Johnson](doctor_name)
+      - [Johnson](doctor_name) please
+      - I choose [Johnson](doctor_name)
+      - [Smith](doctor_name) please
+      - I want [Smith](doctor_name)
+      - I'll see [Smith](doctor_name)
+      - I choose [Smith](doctor_name)
+      - [Demir](doctor_name) please
+      - I want [Demir](doctor_name)
+      - I'll see [Demir](doctor_name)
+      - I choose [Demir](doctor_name)
 
   - intent: provide_reason
     examples: |
@@ -528,29 +590,23 @@ nlu:
       - [fatigue](reason)
       - [tiredness](reason)
       - [weakness](reason)
+      - [Fever](reason)
+      - [fever](reason)
 
   - intent: view_medical_records
     examples: |
       - show me my medical records
       - view my medical history
-      - I want to see my records
+      - I want to see my medical records
       - can I check my medical records
       - what are my medical records
-      - show medical history
-      - view records
+      - show my medical history
+      - view my medical records
       - my medical file
       - check my health records
       - medical records please
-
-  - intent: add_medical_record
-    examples: |
-      - add a medical record
-      - I want to add a record
-      - create new medical record
-      - add to my medical history
-      - record new medical information
-      - add medical note
-      - I need to add a record
-      - create medical entry
-
+      - show medical records
+      - display medical records
+      - get my medical records
+      - medical history please
 
