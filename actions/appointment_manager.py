@@ -140,7 +140,7 @@ class AppointmentManager:
 
             # Normalize all inputs
             normalized_date = self._normalize_date(slots.get("date"))
-            normalized_time = self._normalize_time(slots.get("time"))
+            normalized_time = self._normalize_time(slots.get("time"), normalized_date)
             normalized_doctor = self._normalize_doctor_name(slots.get("doctor_name"))
             
             # Enhanced reason validation
@@ -299,9 +299,15 @@ class AppointmentManager:
             time_str = appointment["appointment_date"].strftime("%H:%M") if appointment["appointment_date"] else "Unknown time"
             doctor_name = appointment["doctor_name"] if appointment["doctor_name"] else "Unknown doctor"
             
+            # Remove "Dr." if it's already in the doctor name
+            if doctor_name.startswith("Dr. "):
+                display_doctor = doctor_name
+            else:
+                display_doctor = f"Dr. {doctor_name}"
+            
             return {
                 "success": True,
-                "message": f"✅ Appointment cancelled successfully!\n📅 Was: {date_str} at {time_str}\n👨‍⚕️ Dr. {doctor_name}"
+                "message": f"✅ Appointment cancelled successfully!\n📅 Was: {date_str} at {time_str}\n👨‍⚕️ {display_doctor}"
             }
             
         except Exception as e:
@@ -400,41 +406,81 @@ class AppointmentManager:
         
         # Handle relative dates
         if date_lower == "today":
-            return today.isoformat()
+            target_date = today
         elif date_lower == "tomorrow":
-            return (today + timedelta(days=1)).isoformat()
-        
-        # Handle weekday names
-        weekdays = {
-            "monday": 0, "tuesday": 1, "wednesday": 2,
-            "thursday": 3, "friday": 4, "saturday": 5, "sunday": 6
-        }
-        
-        if date_lower in weekdays:
+            target_date = today + timedelta(days=1)
+        elif date_lower in ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]:
+            # Handle weekday names
+            weekdays = {
+                "monday": 0, "tuesday": 1, "wednesday": 2,
+                "thursday": 3, "friday": 4, "saturday": 5, "sunday": 6
+            }
+            
+            # Check if Sunday
+            if date_lower == "sunday":
+                raise ValueError("Sorry, we're closed on Sundays. Please choose Monday through Saturday.")
+            
             days_ahead = weekdays[date_lower] - today.weekday()
             if days_ahead <= 0:
                 days_ahead += 7
-            return (today + timedelta(days=days_ahead)).isoformat()
+            target_date = today + timedelta(days=days_ahead)
+        else:
+            # Try parsing as YYYY-MM-DD
+            try:
+                target_date = datetime.strptime(date_input, "%Y-%m-%d").date()
+                if target_date < today:
+                    raise ValueError("Please choose a future date.")
+            except ValueError:
+                raise ValueError("Please enter a valid date (like 'tomorrow', 'Friday', or '2024-12-25').")
         
-        # Try parsing as YYYY-MM-DD
-        try:
-            parsed_date = datetime.strptime(date_input, "%Y-%m-%d").date()
-            if parsed_date < today:
-                raise ValueError("Date cannot be in the past")
-            return parsed_date.isoformat()
-        except ValueError:
-            raise ValueError(f"Invalid date format: {date_input}")
+        # Check if the target date is a Sunday
+        if target_date.weekday() == 6:  # Sunday
+            raise ValueError("Sorry, we're closed on Sundays. Please choose Monday through Saturday.")
+            
+        return target_date.isoformat()
 
-    def _normalize_time(self, time_input: str) -> str:
-        """Normalize time to HH:MM format"""
+    def _check_working_hours(self, date_str: str, time_str: str) -> bool:
+        """Check if the appointment time is within working hours"""
+        try:
+            appointment_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            appointment_time = datetime.strptime(time_str, "%H:%M").time()
+            
+            # Get day of week (0=Monday, 6=Sunday)
+            day_of_week = appointment_date.weekday()
+            
+            # Working hours
+            if day_of_week == 6:  # Sunday
+                raise ValueError("Sorry, we're closed on Sundays. Please choose Monday through Saturday.")
+            elif day_of_week == 5:  # Saturday
+                # Saturday appointments: 9:00 AM - 1:30 PM (clinic closes at 2:00 PM)
+                start_time = datetime.strptime("09:00", "%H:%M").time()
+                end_time = datetime.strptime("13:30", "%H:%M").time()
+                if not (start_time <= appointment_time <= end_time):
+                    raise ValueError("Saturday appointments are available from 9:00 AM to 1:30 PM. Please choose a time within these hours.")
+            else:  # Monday-Friday
+                # Weekday appointments: 8:00 AM - 5:30 PM (clinic closes at 6:00 PM)
+                start_time = datetime.strptime("08:00", "%H:%M").time()
+                end_time = datetime.strptime("17:30", "%H:%M").time()
+                if not (start_time <= appointment_time <= end_time):
+                    raise ValueError("Weekday appointments are available from 8:00 AM to 5:30 PM. Please choose a time within these hours.")
+            
+            return True
+            
+        except ValueError:
+            raise  # Re-raise ValueError for working hours violations
+        except Exception as e:
+            raise ValueError(f"Error checking working hours: {str(e)}")
+
+    def _normalize_time(self, time_input: str, date_str: str = None) -> str:
+        """Normalize time to HH:MM format and validate working hours"""
         if not time_input:
             return None
 
         time_input = time_input.strip().lower()
         
         try:
-            # Pattern 1: "3 PM", "3PM", "3 am", "3am"
-            match = re.match(r'^(\d{1,2})\s*(pm|am)?$', time_input)
+            # Pattern 1: "3 PM", "3PM", "3 am", "3am", "8:am", "8:pm", "3", "8" 
+            match = re.match(r'^(\d{1,2}):?\s*(pm|am)?$', time_input)
             if match:
                 hours = int(match.group(1))
                 period = match.group(2) or "am"  # Default to AM if not specified
@@ -445,9 +491,15 @@ class AppointmentManager:
                     hours = 0
                 
                 if not (0 <= hours <= 23):
-                    raise ValueError(f"Invalid hour: {hours}")
+                    raise ValueError("Please enter a valid hour (like 8 AM, 2 PM, or 14:00).")
                 
-                return f"{hours:02d}:00"
+                normalized_time = f"{hours:02d}:00"
+                
+                # Check working hours if date is provided
+                if date_str:
+                    self._check_working_hours(date_str, normalized_time)
+                
+                return normalized_time
             
             # Pattern 2: "3:30 PM", "3:30PM"
             match = re.match(r'^(\d{1,2}):(\d{2})\s*(pm|am)?$', time_input)
@@ -462,9 +514,15 @@ class AppointmentManager:
                     hours = 0
                 
                 if not (0 <= hours <= 23) or not (0 <= minutes <= 59):
-                    raise ValueError(f"Invalid time: {hours}:{minutes}")
+                    raise ValueError("Please enter a valid time (like 2:30 PM or 14:30).")
                 
-                return f"{hours:02d}:{minutes:02d}"
+                normalized_time = f"{hours:02d}:{minutes:02d}"
+                
+                # Check working hours if date is provided
+                if date_str:
+                    self._check_working_hours(date_str, normalized_time)
+                
+                return normalized_time
             
             # Pattern 3: "14:30", "16:00"
             match = re.match(r'^(\d{1,2}):(\d{2})$', time_input)
@@ -473,14 +531,22 @@ class AppointmentManager:
                 minutes = int(match.group(2))
                 
                 if not (0 <= hours <= 23) or not (0 <= minutes <= 59):
-                    raise ValueError(f"Invalid time: {hours}:{minutes}")
+                    raise ValueError("Please enter a valid time (like 2:30 PM or 14:30).")
                 
-                return f"{hours:02d}:{minutes:02d}"
+                normalized_time = f"{hours:02d}:{minutes:02d}"
+                
+                # Check working hours if date is provided
+                if date_str:
+                    self._check_working_hours(date_str, normalized_time)
+                
+                return normalized_time
             
-            raise ValueError(f"Invalid time format: {time_input}")
+            raise ValueError("Please enter a valid time format (like 2 PM, 14:00, or 2:30 PM).")
             
+        except ValueError:
+            raise  # Re-raise ValueError with user-friendly message
         except Exception as e:
-            raise ValueError(f"Time parsing error: {str(e)}")
+            raise ValueError("Please enter a valid time format (like 2 PM, 14:00, or 2:30 PM).")
 
     def modify_appointment(self, appointment_id: int, modifications: Dict[str, Any]) -> Dict[str, Any]:
         """Modify an existing appointment"""
@@ -508,9 +574,16 @@ class AppointmentManager:
             if "date" in modifications:
                 try:
                     new_date = self._normalize_date(modifications["date"])
-                    # Combine with existing time or default time
-                    existing_time = appointment["appointment_date"].strftime("%H:%M") if appointment["appointment_date"] else "09:00"
-                    new_datetime = f"{new_date} {existing_time}"
+                    # Get existing time or new time if it was also modified
+                    if "time" in modifications:
+                        target_time = self._normalize_time(modifications["time"], new_date)
+                    else:
+                        existing_time = appointment["appointment_date"].strftime("%H:%M") if appointment["appointment_date"] else "09:00"
+                        # Validate existing time with new date
+                        self._check_working_hours(new_date, existing_time)
+                        target_time = existing_time
+                    
+                    new_datetime = f"{new_date} {target_time}"
                     update_fields.append("appointment_date = %s")
                     update_params.append(new_datetime)
                 except ValueError as e:
@@ -519,10 +592,14 @@ class AppointmentManager:
             # Handle time modification
             if "time" in modifications:
                 try:
-                    new_time = self._normalize_time(modifications["time"])
-                    # Combine with existing date or default to tomorrow
-                    existing_date = appointment["appointment_date"].strftime("%Y-%m-%d") if appointment["appointment_date"] else self._normalize_date("tomorrow")
-                    new_datetime = f"{existing_date} {new_time}"
+                    # Get the existing date or use the new date if it was also modified
+                    if "date" in modifications:
+                        target_date = self._normalize_date(modifications["date"])
+                    else:
+                        target_date = appointment["appointment_date"].strftime("%Y-%m-%d") if appointment["appointment_date"] else self._normalize_date("tomorrow")
+                    
+                    new_time = self._normalize_time(modifications["time"], target_date)
+                    new_datetime = f"{target_date} {new_time}"
                     update_fields.append("appointment_date = %s")
                     update_params.append(new_datetime)
                 except ValueError as e:
@@ -566,9 +643,15 @@ class AppointmentManager:
             time_str = updated_appointment["appointment_date"].strftime("%H:%M") if updated_appointment["appointment_date"] else "Unknown time"
             doctor_name = updated_appointment["doctor_name"] if updated_appointment["doctor_name"] else "Unknown doctor"
             
+            # Remove "Dr." if it's already in the doctor name
+            if doctor_name.startswith("Dr. "):
+                display_doctor = doctor_name
+            else:
+                display_doctor = f"Dr. {doctor_name}"
+            
             return {
                 "success": True,
-                "message": f"✅ Appointment updated successfully!\n📅 {date_str} at {time_str}\n👨‍⚕️ Dr. {doctor_name}\n📝 Reason: {updated_appointment['reason']}"
+                "message": f"✅ Appointment updated successfully!\n📅 {date_str} at {time_str}\n👨‍⚕️ {display_doctor}\n📝 Reason: {updated_appointment['reason']}"
             }
             
         except Exception as e:

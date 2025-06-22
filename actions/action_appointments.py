@@ -103,7 +103,9 @@ class ValidateAppointmentForm(FormValidationAction):
         """Validate time slot."""
         try:
             if slot_value:
-                normalized_time = appointment_mgr._normalize_time(slot_value)
+                # Get the date from the tracker to validate working hours
+                date_slot = tracker.get_slot("date")
+                normalized_time = appointment_mgr._normalize_time(slot_value, date_slot)
                 if normalized_time:
                     return {"time": normalized_time}
         except ValueError as e:
@@ -321,11 +323,7 @@ class ActionModifyAppointment(Action):
                     else:
                         # No specific modifications provided, ask what they want to change
                         dispatcher.utter_message(
-                            text=f"I can help you modify your appointment on {latest_apt['date']} at {latest_apt['time']} with {latest_apt['doctor']}.\n"
-                                 f"What would you like to change? You can say things like:\n"
-                                 f"• 'Change the time to 3 PM'\n"
-                                 f"• 'Move it to Friday'\n"
-                                 f"• 'I want to see Dr. Johnson instead'"
+                            text=f"What would you like to change about your appointment on {latest_apt['date']} at {latest_apt['time']} with {latest_apt['doctor']}?"
                         )
                 else:
                     dispatcher.utter_message(text="📅 You have no active appointments to modify.")

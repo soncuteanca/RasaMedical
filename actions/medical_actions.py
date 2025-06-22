@@ -248,7 +248,7 @@ class ActionListProcedures(Action):
 • CABG Surgery - creates alternate blood flow path
 
 For additional details you can reach us at:
-📞 Phone: +1 (555) 123-4567
+📞 Phone: +4 074 123 456
 📧 Email: info@cardiologyclinic.com"""
 
         dispatcher.utter_message(text=response)
@@ -289,7 +289,7 @@ class ActionListTests(Action):
 • Kidney function - medication baseline
 
 For additional details you can reach us at:
-📞 Phone: +1 (555) 123-4567
+📞 Phone: +4 074 123 456
 📧 Email: info@cardiologyclinic.com"""
 
         dispatcher.utter_message(text=response)
@@ -335,7 +335,7 @@ class ActionListPrices(Action):
 • Complete Metabolic Panel      →               50 - 100 RON
 
 For additional details you can reach us at:
-📞 Phone: +1 (555) 123-4567
+📞 Phone: +4 074 123 456
 📧 Email: info@cardiologyclinic.com"""
 
         dispatcher.utter_message(text=response)
