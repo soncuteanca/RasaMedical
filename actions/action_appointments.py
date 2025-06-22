@@ -1,4 +1,4 @@
-from typing import Any, Text, Dict, List
+from typing import Any, Dict, List, Text
 from rasa_sdk import Action, Tracker, FormValidationAction
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.events import SlotSet, AllSlotsReset, FollowupAction
@@ -51,10 +51,14 @@ class ActionBookAppointment(Action):
                     AllSlotsReset()
                 ]
             else:
+                # Check if we need to activate form
                 if "missing_slots" in result:
-                    # Set any slots we do have and activate form to collect missing info
+                    # Set the slots we do have
                     slot_events = [SlotSet(k, v) for k, v in final_slots.items() if v is not None]
+                    
+                    # Activate form to collect missing info
                     slot_events.append(FollowupAction("appointment_form"))
+                    
                     dispatcher.utter_message(text=result["message"])
                     return slot_events
                 else:
@@ -225,7 +229,7 @@ class ActionViewAppointments(Action):
                     status_emoji = "✅" if apt["status"] == "scheduled" else "❌" if apt["status"] == "cancelled" else "✔️"
                     message_lines.append(
                         f"{status_emoji} {apt['date']} at {apt['time']} - {apt['doctor']}\n"
-                        f"Reason: {apt['reason']}"
+                        f"   Reason: {apt['reason']}"
                     )
                 message = "\n".join(message_lines)
             else:

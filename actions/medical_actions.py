@@ -134,6 +134,14 @@ class ActionListDoctorsBySpecialty(Action):
                 'pediatric': 'Pediatric Cardiology',
                 'Cardiovascular': 'Cardiovascular Surgery',
                 'cardiovascular': 'Cardiovascular Surgery',
+                
+                # Surgery mappings (the key fix!)
+                'Surgery': 'Cardiovascular Surgery',
+                'surgery': 'Cardiovascular Surgery', 
+                'Surgeons': 'Cardiovascular Surgery',
+                'surgeons': 'Cardiovascular Surgery',
+                'Surgeon': 'Cardiovascular Surgery',
+                'surgeon': 'Cardiovascular Surgery',
 
                 # Full phrase mappings (the key fix!)
                 'adult cardiologist': 'Adult Cardiology',
