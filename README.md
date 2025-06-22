@@ -1,44 +1,61 @@
-# Medical Assistant Chatbot
+# 🏥 RasaMedical - Medical Assistant Chatbot
 
-The **Medical Assistant Chatbot** is a Rasa-powered conversational AI designed to assist users with medical-related queries. It features real-time communication, a rich web interface, and customizable intents and actions for a smooth user experience.
+A sophisticated **Rasa-powered medical chatbot** designed to assist users with healthcare-related queries, doctor searches, appointment booking, and symptom reporting. Features intelligent NLU with BERT, comprehensive testing, and a modern web interface.
 
 ---
 
 ## 📝 Description
 
-This project is built with **Rasa Open Source** to:
-- Recognize user intents and extract entities
-- Handle dialogue management with custom rules and stories
-- Provide a user-friendly web-based chat interface for interaction
-- Respond with rich content like text and images
-- Manage user data through a Flask backend
-- Support user creation and management
+**RasaMedical** is built with **Rasa Open Source** and provides:
+- **Smart Medical NLU**: BERT-based intent recognition with 81%+ accuracy
+- **Doctor Management**: Search doctors by specialty, list available physicians  
+- **Appointment System**: Book, manage, and track medical appointments
+- **Symptom Analysis**: Report symptoms with intelligent emergency detection
+- **Database Integration**: Full SQLAlchemy integration with MySQL
+- **Web Interface**: Modern chat interface with real-time communication
+- **Safety-First Design**: Prioritizes patient safety in symptom classification
 
-The chatbot uses Python-based custom actions and is integrated with a browser-based chat widget.
+The system uses advanced Python custom actions and includes comprehensive testing for reliability.
 
 ---
 
 ## 🛠️ Requirements
 
-To run this project, you need:
-- **Python**: Version 3.8 or later
-- **Rasa Open Source**: Installed via pip
-- **Node.js and npm**: (for webchat integration)
-- **Browser**: Any modern browser to open the web chat interface
-- **PyCharm**: For development and running the application
-- **Flask**: For the backend API
+### System Requirements
+- **Python**: 3.10+ 
+- **Database**: MySQL (via PyMySQL)
+- **Memory**: 4GB+ RAM (for BERT model)
+- **Storage**: 2GB+ free space
+
+### Key Dependencies
+- **Rasa**: 3.6.4 (conversational AI framework)
+- **TensorFlow**: 2.12.0 (for BERT NLU pipeline)
+- **SQLAlchemy**: <2.0 (database ORM)
+- **Flask**: Web server for user management
+- **PyMySQL**: 1.1.0 (MySQL database connectivity)
 
 ---
 
-## 🚀 Features
+## 🚀 Key Features
 
-- **Intent Recognition**: Handles `greet_intent`, `goodbye_intent`, and more
-- **Custom Actions**: Uses Python scripts for dynamic responses
-- **Rich Responses**: Displays text, buttons, and images
-- **Interactive Web Interface**: Engages users with real-time communication
-- **Scalable Design**: Easily extendable with new intents and actions
-- **User Management**: Create and manage user accounts
-- **Database Integration**: Store and retrieve user data
+### 🧠 Intelligent NLU
+- **BERT-based Processing**: Advanced natural language understanding
+- **Medical Intent Recognition**: Specialized for healthcare conversations
+- **Emergency Detection**: Automatically identifies urgent medical situations
+- **High Accuracy**: 81%+ intent recognition accuracy
+
+### 👨‍⚕️ Medical Functionality  
+- **Doctor Search**: Find physicians by specialty (cardiology, orthopedics, etc.)
+- **Appointment Booking**: Schedule and manage medical appointments
+- **Symptom Reporting**: Report symptoms with intelligent triage
+- **Medical Records**: Access patient information and history
+
+### 🛠️ Technical Features
+- **Database Integration**: SQLAlchemy with MySQL support via PyMySQL
+- **Custom Actions**: Python-based dynamic response system
+- **Web Interface**: Modern HTML/JavaScript chat widget
+- **Comprehensive Testing**: Unit tests + NLU accuracy validation
+- **Safety-First**: Medical safety prioritized in all classifications
 
 ---
 
@@ -47,20 +64,20 @@ To run this project, you need:
 ### 1. Set Up Environment
 
 ```bash
-# Clone the repository
-git clone https://github.com/soncuteanca/RasaMedical
+# Clone the repository (or download the project)
+# git clone <your-repository-url>
 
 # Navigate to project directory
 cd RasaMedical
 
 # Create virtual environment
-python -m venv .venv
+python -m venv venv
 
 # Activate virtual environment
 # On Windows:
-.venv\Scripts\activate
+venv\Scripts\activate
 # On Unix/macOS:
-source .venv/bin/activate
+source venv/bin/activate
 
 # Install required packages
 pip install -r requirements.txt
@@ -73,107 +90,174 @@ pip install -r requirements.txt
 rasa train
 ```
 
-### 3. Running the Application
+### 3. Database Setup
 
-You need to run three servers simultaneously:
+Configure your database connection in `actions/db_config.py`:
+```python
+# Example configuration
+DATABASE_URL = "mysql+pymysql://username:password@localhost/rasamedical"
+```
 
-1. **Flask Server** (for user management API):
+### 4. Running the Application
+
+**Option 1: Automated Startup (Recommended)**
 ```bash
+# Start all servers automatically
+python start_medical.py
+```
+This script will:
+- Kill any existing processes on ports 5000, 5005, 5055
+- Start Flask server (user management)
+- Start Rasa actions server (custom actions)
+- Start Rasa server (main chat functionality)
+- Open separate terminal windows for each service
+
+**Option 2: Manual Startup**
+```bash
+# Terminal 1: Start Flask backend
 python server.py
-```
-This runs on port 5000 and handles user creation and management.
 
-2. **Rasa Action Server** (for custom actions):
-```bash
+# Terminal 2: Start custom actions server
 rasa run actions
+
+# Terminal 3: Start main Rasa server  
+rasa run --enable-api --cors "*"
 ```
-This runs the custom actions like fetching users.
 
-3. **Rasa Server** (for chat functionality):
-```bash
-rasa run -m models --enable-api --cors "*" --debug
-```
-This runs the Rasa model and enables the chat API.
+### 5. Access the Application
 
-### 4. Access the Application
+- **Chat Interface**: Open `html/chat_page.html` in your browser
+- **User Management**: Navigate to `html/home_page.html` 
+- **API Endpoint**: http://localhost:5005 (Rasa server)
+- **Backend API**: http://localhost:5000 (Flask server)
 
-1. Open the project in PyCharm
-2. Open `html/home_page.html` in PyCharm (it will open on port 63342)
-3. You can now:
-   - Use the chat functionality
-   - Create new users
-   - Access all features of the application
-
-The application uses multiple ports:
-- Port 63342: PyCharm's server for serving HTML pages
-- Port 5000: Flask server for user management API
-- Port 5005: Rasa server for chat functionality
+The application architecture:
+- **Port 5005**: Rasa server (main chat functionality)
+- **Port 5055**: Rasa actions server (custom actions)  
+- **Port 5000**: Flask server (user management - optional)
 
 ---
 
-## 🛠️ Command Reference
+## 🧪 Testing
 
-### Basic Commands
+RasaMedical includes comprehensive testing for reliability and accuracy:
 
+### Quick Testing (Recommended)
 ```bash
-# Train models
-rasa train                  # Train both NLU and Core models
-rasa train nlu             # Train only NLU components
-rasa train core            # Train only Core models
+# Run fast unit tests (0.24 seconds)
+python run_tests.py
+```
 
-# Testing and Validation
-rasa shell                 # Launch interactive bot session
-rasa data validate         # Check configuration and training data
-rasa test nlu             # Generate detailed NLU report
+### NLU Accuracy Testing
+```bash
+# Run comprehensive NLU accuracy tests (~12 minutes)
+python run_tests.py --nlu
+```
 
-# Help
-rasa -h                    # View all available commands
+### Full Test Suite
+```bash
+# Run all tests (unit + NLU)
+python run_tests.py --all
+```
+
+**Test Coverage:**
+- ✅ 15 unit tests for business logic
+- ✅ NLU accuracy validation (81%+ accuracy)
+- ✅ Performance benchmarks
+- ✅ Medical action testing with mocked database
+
+For detailed testing documentation, see [README-TESTING.md](README-TESTING.md).
+
+---
+
+## 🛠️ Development Commands
+
+### Model Training
+```bash
+rasa train                  # Train complete model
+rasa train nlu             # Train only NLU
+rasa train core            # Train only dialogue management
+```
+
+### Testing & Validation
+```bash
+rasa shell                 # Interactive testing
+rasa data validate         # Validate training data
+rasa test nlu             # Generate NLU evaluation report
+```
+
+### Development
+```bash
+rasa run --debug           # Run with detailed logging
+rasa interactive           # Interactive learning mode
+rasa visualize             # Visualize training stories
 ```
 
 ---
 
-## 🌐 Web Interface Setup
+## 🏗️ Architecture
 
-### 1. Install Web Chat
+### Core Components
+- **NLU Pipeline**: BERT-based intent classification and entity extraction
+- **Dialogue Management**: Rule-based and ML-based conversation flow
+- **Custom Actions**: Python actions for database operations and business logic
+- **Web Interface**: HTML/JavaScript chat widget with real-time messaging
 
-```bash
-# Install the Rasa Web Chat package
-npm install rasa-webchat
+### Database Schema
+- **Users**: Patient information and authentication
+- **Doctors**: Physician profiles and specialties  
+- **Appointments**: Booking system with conflict detection
+- **Medical Records**: Patient history and symptoms
+
+### File Structure
 ```
-
-### 2. Configuration
-
-1. Clone the web interface repository:
-   ```bash
-   git clone https://github.com/botfront/rasa-webchat
-   ```
-
-2. Navigate to the downloaded folder and install dependencies:
-   ```bash
-   cd rasa-webchat
-   npm install
-   ```
-
-### 3. Launch Services
-
-```bash
-# Start both servers
-rasa run actions
-rasa run -m models --enable-api --cors "*" --debug
+RasaMedical/
+├── actions/              # Custom Python actions
+├── data/                 # Training data (NLU, stories, rules)
+├── models/               # Trained Rasa models
+├── tests/                # Comprehensive test suite
+├── html/                 # Web interface files
+├── database/             # Database scripts and migrations
+├── venv/                 # Python virtual environment
+├── config.yml            # Rasa configuration
+├── domain.yml            # Domain definition
+├── credentials.yml       # Channel credentials
+├── endpoints.yml         # Action server endpoints
+├── server.py             # Flask backend server
+├── run_tests.py          # Test runner script
+├── requirements.txt      # Python dependencies
+├── README.md             # Main documentation
+└── README-TESTING.md     # Testing documentation
 ```
 
 ---
 
-## 📝 Important Notes
+## 📚 Documentation
 
-- Always validate your data before training:
-  ```bash
-  rasa data validate
-  ```
-- Ensure all three servers (Flask, Rasa, and actions) are running
-- The application requires both PyCharm's server and Flask server to be running
-- For development, use `--debug` flag with `rasa run` for detailed logs
-- Check the [Rasa documentation](https://rasa.com/docs/) for advanced configuration
-- Make sure your database is properly configured in `actions/db_config.py`
+- **Main Documentation**: This README
+- **Testing Guide**: [README-TESTING.md](README-TESTING.md)
+- **Rasa Documentation**: [rasa.com/docs](https://rasa.com/docs/)
+- **Configuration**: See `config.yml` and `domain.yml`
+
+---
+
+## ⚠️ Important Notes
+
+### Medical Safety
+- The system prioritizes patient safety in symptom classification
+- Serious symptoms (chest pain, breathing issues) are automatically flagged as emergencies
+- Always consult healthcare professionals for medical decisions
+
+### Technical Considerations  
+- **Memory Usage**: BERT model requires 4GB+ RAM
+- **Startup Time**: Initial model loading takes 30-60 seconds
+- **Database**: Ensure proper database configuration before running
+- **Testing**: Run tests regularly to maintain system reliability
+
+### Production Deployment
+- Configure proper database credentials
+- Set up SSL/TLS for secure communication
+- Monitor system performance and accuracy
+- Regular model retraining with new data
 
 ---
