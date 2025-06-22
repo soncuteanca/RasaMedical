@@ -223,24 +223,20 @@ nlu:
 
   - intent: report_symptom_intent
     examples: |
-      - I feel short of breath
-      - I'm dizzy
-      - My chest hurts
-      - I have chest pain
+      - I feel short of breath sometimes
+      - I'm dizzy occasionally
+      - I have mild chest discomfort
       - I have palpitations
       - My legs feel heavy
-      - There's pain in my chest
-      - I feel faint
+      - I feel faint sometimes
       - I get tired very fast
-      - My heart races
+      - My heart races sometimes
       - I'm feeling weak
       - Swollen ankles
-      - My chest feels tight
-      - I'm nauseous and dizzy
-      - chest pain
-      - pain in chest
-      - chest discomfort
       - I feel dizzy
+      - I have some chest discomfort
+      - mild chest pain
+      - chest discomfort
 
   - intent: affirm
     examples: |
@@ -313,19 +309,22 @@ nlu:
     examples: |
       - I think I'm having a heart attack
       - I can't breathe properly
-      - My chest hurts a lot
+      - My chest hurts badly
       - This is urgent
       - I feel like I might pass out
       - I need emergency help
       - Call an ambulance
+      - I have severe chest pain
       - I have stabbing chest pain
       - I'm shaking and sweating
       - My vision is blurry
-      - I'm in pain
+      - I'm in severe pain
       - Please help, it's an emergency
       - Emergency
       - Help
       - I think i have an heart attack
+      - severe chest pain
+      - bad chest pain
 
   - intent: list_procedures
     examples: |
@@ -404,12 +403,12 @@ nlu:
     examples: |
       - I want to book an appointment
       - Book an appointment
-      - want to book an appointment with [Dr. Smith](doctor_name) [tomorrow](date) at [2 PM](time) for [chest pain](reason)
+      - want to book an appointment with [Dr. Smith](doctor_name) [tomorrow](date) at [2 PM](time) for [checkup](reason)
       - I want to book an appointment for [tomorrow](date) at [4 PM](time)  
       - I want to see [Dr. Smith](doctor_name) [tomorrow](date) at [9](time)
       - I want to see [Smith](doctor_name) [tomorrow](date) at [9](time)
       - [Tomorrow](date) at [3 PM](time)
-      - appointment with [Dr. Smith](doctor_name) [tomorrow](date) at [2 PM](time) for [chest pai](reason)
+      - appointment with [Dr. Smith](doctor_name) [tomorrow](date) at [2 PM](time) for [consultation](reason)
       - see [Dr. Smith](doctor_name) [tomorrow](date) at [nine](time)
       - book appointment [today](date) at [4 PM](time)
       - Schedule appointment
@@ -567,31 +566,18 @@ nlu:
 
   - intent: provide_reason
     examples: |
-      - [chest pai](reason)
-      - [pain](reason)
-      - [heart](reason)
       - [checkup](reason)
       - [consultation](reason)
-      - [dizziness](reason)
-      - [diziness](reason)
-      - [dizzy](reason)
-      - [fever](reason)
-      - [high fever](reason)
-      - [temperature](reason)
-      - [pulse](reason)
-      - [high pulse](reason)
-      - [raisepulse](reason)
-      - [rapid pulse](reason)
-      - [fast heartbeat](reason)
-      - [heart rate](reason)
-      - [chest tightness](reason)
-      - [shortness of breath](reason)
-      - [breathing problems](reason)
-      - [fatigue](reason)
-      - [tiredness](reason)
-      - [weakness](reason)
-      - [Fever](reason)
-      - [fever](reason)
+      - [follow-up](reason)
+      - [routine visit](reason)
+      - [heart examination](reason)
+      - [cardiac screening](reason)
+      - [blood pressure check](reason)
+      - [medication review](reason)
+      - [test results](reason)
+      - [second opinion](reason)
+      - [preventive care](reason)
+      - [annual checkup](reason)
 
   - intent: view_medical_records
     examples: |
