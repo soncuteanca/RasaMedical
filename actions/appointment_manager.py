@@ -431,7 +431,7 @@ class AppointmentManager:
                 if target_date < today:
                     raise ValueError("Please choose a future date.")
             except ValueError:
-                raise ValueError("Please enter a valid date (like 'tomorrow', 'Friday', or '2024-12-25').")
+                raise ValueError("Please enter a valid date (like 'tomorrow', 'Friday'').")
         
         # Check if the target date is a Sunday
         if target_date.weekday() == 6:  # Sunday

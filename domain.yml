@@ -111,7 +111,7 @@ responses:
     - text: "We accept most major insurance plans including. Please call us to verify your specific plan."
 
   utter_working_hours:
-    - text: "Our clinic hours are:\n🕐 Monday - Friday: 8:00 AM - 6:00 PM\n🕐 Saturday: 9:00 AM - 2:00 PM\n🕐 Sunday: Closed\n\n📅 Appointments can only be booked during these hours."
+    - text: "Our clinic hours are:\n🕐 Monday - Friday: 8:00 AM - 6:00 PM\n🕐 Saturday: 9:00 AM - 2:00 PM\n🕐 Sunday: Closed\n\"
 
   utter_location:
     - text: "Our clinic is located at:\n📍 123 Heart Health Avenue, Medical District, City, State 12345\nWe're on the second floor of the Medical Plaza building."

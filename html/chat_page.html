@@ -146,7 +146,7 @@
         .header-nav {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .nav-link {
@@ -171,6 +171,42 @@
             color: #5E1F28;
             border-color: #B3A09A;
             transform: translateY(-2px);
+        }
+
+        .session-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .session-btn {
+            padding: 8px 16px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1.5px solid #5E1F28;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn {
+            background-color: #B3A09A;
+            color: #5E1F28;
+        }
+
+        .clear-btn:hover {
+            background-color: #5E1F28;
+            color: #F0EDEA;
+        }
+
+        .logout-btn {
+            background-color: #5E1F28;
+            color: #F0EDEA;
+        }
+
+        .logout-btn:hover {
+            background-color: #4A1F24;
         }
 
         footer {
@@ -206,6 +242,10 @@
         <input type="text" id="userInput" placeholder="Type your message..."/>
         <button onclick="sendMessage()">Send</button>
     </div>
+    <div class="session-controls">
+        <button class="session-btn clear-btn" onclick="clearConversation()">Clear Conversation</button>
+        <button class="session-btn logout-btn" onclick="logout()">Logout</button>
+    </div>
 </div>
 
 <!-- Authentication Modal -->
@@ -219,6 +259,9 @@
 <script src="https://cdn.socket.io/4.2.0/socket.io.js"></script>
 
 <script>
+    // Global variable for session management
+    let sessionActive = true;
+
     // Authentication check - redirect to login if not authenticated
     function checkAuthentication() {
         const token = localStorage.getItem('userToken');
@@ -318,6 +361,38 @@
         }
     }
 
+    // Session management functions
+    function clearConversation() {
+        const chatBox = document.getElementById('webchat');
+        chatBox.innerHTML = '';
+        
+        // Restart the conversation with the bot to get the greeting
+        socket.emit('user_uttered', {
+            message: "/get_started_intent",
+            metadata: {
+                user: localStorage.getItem('user')
+            }
+        });
+        
+        console.log('Conversation cleared and restarted');
+    }
+
+    function logout() {
+        sessionActive = false;
+        
+        // Clear local storage
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('user');
+        
+        // Disconnect socket
+        if (socket && socket.connected) {
+            socket.disconnect();
+        }
+        
+        // Redirect to login page
+        window.location.href = 'login.html';
+    }
+
     // Update the profile link when page loads
     updateUserProfileLink();
 
@@ -330,6 +405,8 @@
     }
 
     function sendMessage() {
+        if (!sessionActive) return;
+        
         const inputField = document.getElementById('userInput');
         const message = inputField.value;
         if (message.trim() !== "") {
@@ -347,6 +424,8 @@
     }
 
     socket.on('connect', () => {
+        if (!sessionActive) return;
+        
         console.log('Connected to Rasa server');
         const user = localStorage.getItem('user');
         socket.emit('user_uttered', {
@@ -358,6 +437,8 @@
     });
 
     socket.on('bot_uttered', (data) => {
+        if (!sessionActive) return;
+        
         if (data.text) {
             chatBox.innerHTML += `<div class="chat-message bot"><span class="label">Assistant:</span><span class="text">${data.text.replace(/\n/g, '<br>')}</span></div>`;
         } else if (data.attachment && data.attachment.type === "image") {
@@ -367,6 +448,7 @@
         scrollToBottom();
     });
 
+    // Prevent form submission and handle enter key
     document.getElementById('userInput').addEventListener('keypress', function (event) {
         if (event.keyCode === 13) {
             sendMessage();
@@ -374,10 +456,18 @@
         }
     });
 
+    // Auto-capitalize first letter
     document.getElementById('userInput').addEventListener('input', function (event) {
         let val = event.target.value;
         if (val.length > 0) {
             event.target.value = val.charAt(0).toUpperCase() + val.slice(1);
+        }
+    });
+
+    // Handle page unload
+    window.addEventListener('beforeunload', function() {
+        if (socket && socket.connected) {
+            socket.disconnect();
         }
     });
 </script>

@@ -4,8 +4,39 @@ from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.events import SlotSet, AllSlotsReset, FollowupAction
 from rasa_sdk.types import DomainDict
 from .appointment_manager import AppointmentManager
+import json
 
 appointment_mgr = AppointmentManager()
+
+def _extract_user_id_from_tracker(tracker: Tracker) -> int:
+    """Extract user ID from tracker metadata"""
+    try:
+        # Try to get user data from session metadata
+        session_metadata = tracker.get_slot("session_started_metadata")
+        if session_metadata and isinstance(session_metadata, dict):
+            user_data_str = session_metadata.get('user')
+            if user_data_str:
+                user = json.loads(user_data_str)
+                if isinstance(user, dict) and 'id' in user:
+                    return int(user['id'])
+        
+        # Fallback: try to get from latest message metadata
+        latest_message = tracker.latest_message
+        if latest_message and 'metadata' in latest_message:
+            metadata = latest_message['metadata']
+            if 'user' in metadata:
+                user_data_str = metadata['user']
+                if user_data_str:
+                    user = json.loads(user_data_str)
+                    if isinstance(user, dict) and 'id' in user:
+                        return int(user['id'])
+        
+        # If no user ID found, raise an error
+        raise ValueError("User ID not found in session")
+        
+    except Exception as e:
+        print(f"Error extracting user ID: {e}")
+        raise ValueError("Could not extract user ID from session")
 
 class ActionBookAppointment(Action):
     def name(self) -> Text:
@@ -15,6 +46,10 @@ class ActionBookAppointment(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
     ) -> List[Dict[Text, Any]]:
         try:
+            # Extract and set user ID from tracker
+            user_id = _extract_user_id_from_tracker(tracker)
+            appointment_mgr.set_user_id(user_id)
+            
             # Get entities from current message
             entities = tracker.latest_message.get("entities", [])
             intent = tracker.latest_message.get("intent", {})
@@ -41,7 +76,6 @@ class ActionBookAppointment(Action):
             final_slots = {**existing_slots, **current_slots}
             
             # Try to create appointment
-            # Note: User context will be handled automatically by appointment manager
             result = appointment_mgr.create_appointment(final_slots)
             
             if result["success"]:
@@ -193,22 +227,32 @@ class ActionSubmitAppointmentForm(Action):
     async def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
     ) -> List[Dict[Text, Any]]:
-        # Get all slots
-        slots = {
-            "date": tracker.get_slot("date"),
-            "time": tracker.get_slot("time"),
-            "doctor_name": tracker.get_slot("doctor_name"),
-            "reason": tracker.get_slot("reason"),
-        }
-
         try:
-            # Create appointment - user context handled automatically
+            # Extract and set user ID from tracker
+            user_id = _extract_user_id_from_tracker(tracker)
+            appointment_mgr.set_user_id(user_id)
+            
+            # Get all slots
+            slots = {
+                "date": tracker.get_slot("date"),
+                "time": tracker.get_slot("time"),
+                "doctor_name": tracker.get_slot("doctor_name"),
+                "reason": tracker.get_slot("reason")
+            }
+            
+            # Create appointment
             result = appointment_mgr.create_appointment(slots)
-            dispatcher.utter_message(text=result["message"])
-            return [
-                SlotSet("appointment_id", result["appointment"]["id"]),
-                AllSlotsReset()
-            ]
+            
+            if result["success"]:
+                dispatcher.utter_message(text=result["message"])
+                return [
+                    SlotSet("appointment_id", result["appointment"]["id"]),
+                    AllSlotsReset()
+                ]
+            else:
+                dispatcher.utter_message(text=result["message"])
+                return [AllSlotsReset()]
+                
         except Exception as e:
             dispatcher.utter_message(text=f"Sorry, I couldn't complete your appointment booking: {str(e)}")
             return [AllSlotsReset()]
@@ -222,7 +266,10 @@ class ActionViewAppointments(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
     ) -> List[Dict[Text, Any]]:
         try:
-            # Get appointments from database - user context handled automatically
+            # Extract and set user ID from tracker
+            user_id = _extract_user_id_from_tracker(tracker)
+            appointment_mgr.set_user_id(user_id)
+            
             result = appointment_mgr.get_appointments()
             
             if result["success"] and result["appointments"]:
@@ -239,7 +286,6 @@ class ActionViewAppointments(Action):
             
             dispatcher.utter_message(text=message)
             return []
-
         except Exception as e:
             dispatcher.utter_message(text=f"Sorry, I couldn't retrieve your appointments: {str(e)}")
             return []
@@ -253,6 +299,10 @@ class ActionCancelAppointment(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
     ) -> List[Dict[Text, Any]]:
         try:
+            # Extract and set user ID from tracker
+            user_id = _extract_user_id_from_tracker(tracker)
+            appointment_mgr.set_user_id(user_id)
+            
             # Get appointments from database
             result = appointment_mgr.get_appointments()
             
@@ -280,7 +330,7 @@ class ActionCancelAppointment(Action):
                 dispatcher.utter_message(text="📅 You have no appointments to cancel.")
             
             return []
-
+                
         except Exception as e:
             dispatcher.utter_message(text=f"Sorry, I couldn't cancel your appointment: {str(e)}")
             return []
@@ -294,6 +344,10 @@ class ActionModifyAppointment(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
     ) -> List[Dict[Text, Any]]:
         try:
+            # Extract and set user ID from tracker
+            user_id = _extract_user_id_from_tracker(tracker)
+            appointment_mgr.set_user_id(user_id)
+            
             # Get appointments from database
             result = appointment_mgr.get_appointments()
             
@@ -303,13 +357,13 @@ class ActionModifyAppointment(Action):
                 
                 if active_appointments:
                     latest_apt = active_appointments[0]
-                    
+            
                     # Get entities from current message for modification
                     entities = tracker.latest_message.get("entities", [])
                     modifications = {}
                     
                     for entity in entities:
-                        if entity["entity"] in ["date", "time", "doctor_name"]:
+                        if entity["entity"] in ["date", "time", "doctor_name", "reason"]:
                             modifications[entity["entity"]] = entity["value"]
                     
                     if modifications:
@@ -331,7 +385,7 @@ class ActionModifyAppointment(Action):
                 dispatcher.utter_message(text="📅 You have no appointments to modify.")
             
             return []
-
+            
         except Exception as e:
             dispatcher.utter_message(text=f"Sorry, I couldn't modify your appointment: {str(e)}")
             return []
