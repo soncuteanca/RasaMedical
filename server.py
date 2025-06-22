@@ -2,10 +2,38 @@ from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
 from actions.db_connect import db_manager
 import logging
+import hashlib
+import secrets
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
+def hash_password(password: str) -> str:
+    """Create a secure password hash using SHA-256 with salt"""
+    # Generate a random salt
+    salt = secrets.token_hex(16)
+    # Create hash
+    password_hash = hashlib.sha256((password + salt).encode()).hexdigest()
+    # Return salt:hash format
+    return f"{salt}:{password_hash}"
+
+def verify_password(password: str, hashed_password: str) -> bool:
+    """Verify a password against its hash"""
+    try:
+        # Handle both hashed and plain text passwords for backward compatibility
+        if ':' not in hashed_password:
+            # Plain text password (legacy users)
+            return password == hashed_password
+        
+        # Extract salt and hash
+        salt, stored_hash = hashed_password.split(':', 1)
+        # Hash the provided password with the same salt
+        password_hash = hashlib.sha256((password + salt).encode()).hexdigest()
+        # Compare hashes
+        return password_hash == stored_hash
+    except Exception:
+        return False
 
 app = Flask(__name__, static_folder='html')
 CORS(app)  # Enable CORS for all routes
@@ -178,6 +206,10 @@ def create_user():
     if request.method == 'POST':
         try:
             data = request.json
+            
+            # Hash the password before storing
+            hashed_password = hash_password(data['password'])
+            
             query = """
                 INSERT INTO users (first_name, last_name, email, password, sex, age, phone) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -186,12 +218,13 @@ def create_user():
                 data['first_name'],
                 data['last_name'],
                 data['email'],
-                data['password'],
+                hashed_password,  # Store hashed password
                 data['sex'],
                 data['age'],
                 data['phone']
             )
             db_manager.execute_query(query, params, fetch=False)
+            logger.info(f"User created successfully: {data['email']}")
             return jsonify({'message': 'User created successfully'}), 201
         except Exception as e:
             logger.error(f"Error creating user: {str(e)}")
@@ -210,7 +243,8 @@ def login():
             params = (data['email'],)
             result = db_manager.execute_query(query, params)
             
-            if result and result[0]['password'] == data['password']:
+            if result and verify_password(data['password'], result[0]['password']):
+                logger.info(f"Successful login for user: {data['email']}")
                 return jsonify({
                     'message': 'Login successful',
                     'token': 'dummy_token',
@@ -221,6 +255,7 @@ def login():
                     }
                 }), 200
             else:
+                logger.warning(f"Failed login attempt for email: {data.get('email', 'unknown')}")
                 return jsonify({'error': 'Invalid email or password'}), 401
         except Exception as e:
             logger.error(f"Error during login: {str(e)}")
