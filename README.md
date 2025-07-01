@@ -162,7 +162,7 @@ python run_tests.py --all
 
 **Test Coverage:**
 - ✅ 15 unit tests for business logic
-- ✅ NLU accuracy validation (81%+ accuracy)
+- ✅ NLU accuracy validation
 - ✅ Performance benchmarks
 - ✅ Medical action testing with mocked database
 

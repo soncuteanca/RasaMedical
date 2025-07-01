@@ -623,7 +623,49 @@ function displayAppointments(appointments, showWarning = false) {
     }
 
     // Sort appointments by date (newest first)
-    appointments.sort((a, b) => new Date(b.appointment_date) - new Date(a.appointment_date));
+    appointments.sort((a, b) => {
+        // Parse dates correctly as local time for sorting
+        const parseLocalDate = (dateStr) => {
+            if (!dateStr) return new Date(0);
+            
+            const str = dateStr.toString();
+            
+            // Handle GMT format first
+            const gmtMatch = str.match(/^.+, (\d{1,2}) (\w{3}) (\d{4}) (\d{2}):(\d{2}):(\d{2}) GMT$/);
+            if (gmtMatch) {
+                const [, day, monthName, year, hour, minute, second] = gmtMatch;
+                const monthMap = {
+                    'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+                    'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+                };
+                return new Date(
+                    parseInt(year),
+                    monthMap[monthName],
+                    parseInt(day),
+                    parseInt(hour),
+                    parseInt(minute),
+                    parseInt(second)
+                );
+            }
+            
+            // Handle string format
+            const match = str.match(/^(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})$/);
+            if (match) {
+                const [, year, month, day, hour, minute, second] = match;
+                return new Date(
+                    parseInt(year), 
+                    parseInt(month) - 1,
+                    parseInt(day),
+                    parseInt(hour),
+                    parseInt(minute),
+                    parseInt(second)
+                );
+            } else {
+                return new Date(dateStr);
+            }
+        };
+        return parseLocalDate(b.appointment_date) - parseLocalDate(a.appointment_date);
+    });
     
     appointments.forEach(app => {
         const li = document.createElement('li');
@@ -631,7 +673,54 @@ function displayAppointments(appointments, showWarning = false) {
         li.className = `appointment-${status}`;
         
         // Format date and time
-        const appointmentDate = new Date(app.appointment_date);
+        // FIX: Database returns GMT dates, we need to treat them as local time
+        let appointmentDate;
+        if (app.appointment_date) {
+            console.log('Raw appointment_date from database:', app.appointment_date);
+            
+            const dateStr = app.appointment_date.toString();
+            
+            // Check if it's in GMT format: "Mon, 30 Jun 2025 09:00:00 GMT"
+            const gmtMatch = dateStr.match(/^.+, (\d{1,2}) (\w{3}) (\d{4}) (\d{2}):(\d{2}):(\d{2}) GMT$/);
+            if (gmtMatch) {
+                const [, day, monthName, year, hour, minute, second] = gmtMatch;
+                const monthMap = {
+                    'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+                    'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+                };
+                // Create date as LOCAL time (not GMT)
+                appointmentDate = new Date(
+                    parseInt(year),
+                    monthMap[monthName],
+                    parseInt(day),
+                    parseInt(hour),
+                    parseInt(minute),
+                    parseInt(second)
+                );
+                console.log('Parsed GMT as local time:', appointmentDate, 'Hours:', appointmentDate.getHours());
+            } else {
+                // Try the original string format "2025-06-30 09:00:00"
+                const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})$/);
+                if (match) {
+                    const [, year, month, day, hour, minute, second] = match;
+                    appointmentDate = new Date(
+                        parseInt(year), 
+                        parseInt(month) - 1,
+                        parseInt(day),
+                        parseInt(hour),
+                        parseInt(minute),
+                        parseInt(second)
+                    );
+                    console.log('Parsed string as local time:', appointmentDate, 'Hours:', appointmentDate.getHours());
+                } else {
+                    // Fallback
+                    appointmentDate = new Date(app.appointment_date);
+                    console.log('Fallback parsing:', appointmentDate);
+                }
+            }
+        } else {
+            appointmentDate = new Date();
+        }
         const dateStr = appointmentDate.toLocaleDateString('en-US', {
             weekday: 'short',
             year: 'numeric',
@@ -640,8 +729,14 @@ function displayAppointments(appointments, showWarning = false) {
         });
         const timeStr = appointmentDate.toLocaleTimeString('en-US', {
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            hour12: true
         });
+        
+        // Additional debugging - let's see what's happening
+        console.log('Final timeStr for display:', timeStr);
+        console.log('appointmentDate hours:', appointmentDate.getHours());
+        console.log('appointmentDate minutes:', appointmentDate.getMinutes());
         
         // Determine if appointment is in the past, today, or future
         const now = new Date();
